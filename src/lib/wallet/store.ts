@@ -23,7 +23,6 @@ export const wallet = writable<WalletStore>({
 	connected: false,
 	mounted: false
 });
-export default wallet;
 
 export let walletBalanceInterval: NodeJS.Timeout | undefined;
 export function walletMount() {
@@ -37,6 +36,7 @@ export function walletMount() {
 	const unwatch = watchAccount(async (account) => {
 		const { address, isConnected } = account;
 		wallet.update((w) => {
+			console.info('walletMount', { address, isConnected });
 			w.loading = !isConnected;
 			w.connected = isConnected;
 			w.address = address;

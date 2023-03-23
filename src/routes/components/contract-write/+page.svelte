@@ -1,14 +1,11 @@
 <script lang="ts">
-	import { formatEther } from 'ethers/lib/utils.js';
-
-	import { BigNumber } from 'ethers';
-
+	import * as ethers from 'ethers';
 	import { Typography } from '@cinderlink/ui-kit/content';
 	import { Syntax } from '@cinderlink/ui-kit/markup';
 	import { LoadingIndicator } from '@cinderlink/ui-kit/indicator';
 	import { Button } from '@cinderlink/ui-kit/interactive';
 	import { CandorEarlyAccess } from '$lib/registry/contracts';
-	import wallet from '$lib/wallet/store';
+	import { wallet } from '$lib/wallet/store';
 	import Wagmi from '$lib/wagmi/Wagmi.svelte';
 	import ContractWrite from '$lib/contract/ContractWrite.svelte';
 	import ConnectButton from '$lib/wallet/ConnectButton.svelte';
@@ -60,7 +57,7 @@
 			<ContractWrite
 				method="mint"
 				args={[$wallet.address]}
-				value={BigNumber.from('10000000000000000')}
+				value={ethers.BigNumber.from('10000000000000000')}
 				address={CandorEarlyAccess.address}
 				abi={CandorEarlyAccess.abi}
 				let:run

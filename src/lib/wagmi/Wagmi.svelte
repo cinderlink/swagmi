@@ -15,4 +15,8 @@
 	});
 </script>
 
-<slot connected={$wagmi.connected} client={$wagmi.client} />
+{#if $wagmi.connected}
+	<slot connected={$wagmi.connected} client={$wagmi.client} />
+{:else}
+	<slot name="loading" />
+{/if}

@@ -3,7 +3,7 @@
 	import { Syntax } from '@cinderlink/ui-kit/markup';
 	import { LoadingIndicator } from '@cinderlink/ui-kit/indicator';
 	import { CandorEarlyAccess } from '$lib/registry/contracts';
-	import wallet from '$lib/wallet/store';
+	import { wallet } from '$lib/wallet/store';
 	import Wagmi from '$lib/wagmi/Wagmi.svelte';
 	import ContractRead from '$lib/contract/ContractRead.svelte';
 	import ConnectButton from '$lib/wallet/ConnectButton.svelte';

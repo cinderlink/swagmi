@@ -5,4 +5,7 @@
 <Typography>svelte + wagmi = swagmi</Typography>
 <p>Simple headless primitives for Web3 applications using Svelte(Kit) + @wagmi/core</p>
 
-<a href="/getting-started">Getting Started</a>
+<p>
+	Read the <a href="/components">Components</a> or <a href="/stores">Stores</a> documentation for more
+	information.
+</p>
