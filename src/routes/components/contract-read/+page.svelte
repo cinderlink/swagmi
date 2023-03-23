@@ -1,7 +1,5 @@
 <script lang="ts">
-	import { Typography } from '@cinderlink/ui-kit/content';
-	import { Syntax } from '@cinderlink/ui-kit/markup';
-	import { LoadingIndicator } from '@cinderlink/ui-kit/indicator';
+	import { Typography, Syntax, LoadingIndicator } from '@cinderlink/ui-kit';
 	import { CandorEarlyAccess } from '$lib/registry/contracts';
 	import { wallet } from '$lib/wallet/store';
 	import Wagmi from '$lib/wagmi/Wagmi.svelte';

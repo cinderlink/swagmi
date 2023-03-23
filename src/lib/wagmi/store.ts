@@ -2,7 +2,6 @@ import {
 	Client,
 	Connector,
 	createClient,
-	InjectedConnector,
 	type Chain,
 	type ChainProviderFn,
 	type Provider,

@@ -3,6 +3,7 @@ import {
 	fetchBalance,
 	fetchEnsAvatar,
 	fetchEnsName,
+	getAccount,
 	watchAccount,
 	type FetchBalanceResult
 } from '@wagmi/core';
@@ -25,7 +26,7 @@ export const wallet = writable<WalletStore>({
 });
 
 export let walletBalanceInterval: NodeJS.Timeout | undefined;
-export function walletMount() {
+export async function walletMount() {
 	const { mounted } = get(wallet);
 	if (mounted) return () => undefined;
 	wallet.update((w) => {
@@ -33,32 +34,28 @@ export function walletMount() {
 		w.loading = true;
 		return w;
 	});
+
+	const account = getAccount();
+	if (account) {
+		wallet.update((w) => {
+			w.loading = false;
+			w.connected = true;
+			w.address = account.address;
+			return w;
+		});
+		await fetchAccountDetails();
+	}
+
 	const unwatch = watchAccount(async (account) => {
 		const { address, isConnected } = account;
 		wallet.update((w) => {
-			console.info('walletMount', { address, isConnected });
 			w.loading = !isConnected;
 			w.connected = isConnected;
 			w.address = address;
 			return w;
 		});
 
-		if (address && isConnected) {
-			const displayName = await fetchEnsName({ address });
-			if (displayName) {
-				wallet.update((w) => {
-					w.displayName = displayName;
-					return w;
-				});
-			}
-			const avatar = await fetchEnsAvatar({ address });
-			if (avatar) {
-				wallet.update((w) => {
-					w.avatar = avatar;
-					return w;
-				});
-			}
-		}
+		await fetchAccountDetails();
 
 		wallet.update((w) => {
 			w.loading = false;
@@ -88,6 +85,26 @@ export function walletMount() {
 			clearInterval(walletBalanceInterval);
 		}
 	};
+}
+
+export async function fetchAccountDetails() {
+	const { address, connected } = get(wallet);
+	if (address && connected) {
+		const displayName = await fetchEnsName({ address });
+		if (displayName) {
+			wallet.update((w) => {
+				w.displayName = displayName;
+				return w;
+			});
+		}
+		const avatar = await fetchEnsAvatar({ address });
+		if (avatar) {
+			wallet.update((w) => {
+				w.avatar = avatar;
+				return w;
+			});
+		}
+	}
 }
 
 export function disconnectWallet() {

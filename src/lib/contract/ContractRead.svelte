@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { LoadingIndicator } from '@cinderlink/ui-kit/indicator';
+	import { LoadingIndicator } from '@cinderlink/ui-kit';
 	import Contract from './Contract.svelte';
 
 	export let address: string;

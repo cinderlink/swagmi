@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { Button } from '@cinderlink/ui-kit/interactive';
+	import { Button } from '@cinderlink/ui-kit';
 	import { disconnectWallet } from '$lib/wallet/store';
 </script>
 

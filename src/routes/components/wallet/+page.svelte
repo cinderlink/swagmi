@@ -1,7 +1,5 @@
 <script lang="ts">
-	import { Typography } from '@cinderlink/ui-kit/content';
-	import { Button } from '@cinderlink/ui-kit/interactive';
-	import { Syntax } from '@cinderlink/ui-kit/markup';
+	import { Typography, Button, Syntax } from '@cinderlink/ui-kit';
 	import Wagmi from '$lib/wagmi/Wagmi.svelte';
 	import Wallet from '$lib/wallet/Wallet.svelte';
 	import ConnectModal from '$lib/wallet/ConnectModal.svelte';

@@ -1,6 +1,5 @@
 <script lang="ts">
-	import { Panel } from '@cinderlink/ui-kit/content';
-	import { LoadingIndicator } from '@cinderlink/ui-kit/indicator';
+	import { Panel, LoadingIndicator } from '@cinderlink/ui-kit';
 	export let explorerUrl: string | undefined = undefined;
 	import type { ContractReceipt } from 'ethers';
 	import * as ethers from 'ethers';

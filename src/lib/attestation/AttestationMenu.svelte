@@ -1,7 +1,5 @@
 <script lang="ts">
-	import { LoadingIndicator } from '@cinderlink/ui-kit/indicator';
-	import { Button, Dropdown, List } from '@cinderlink/ui-kit/interactive';
-	import { theme } from '@cinderlink/ui-kit';
+	import { LoadingIndicator, Button, Dropdown, List, theme } from '@cinderlink/ui-kit';
 	import type { Size } from '@cinderlink/ui-kit';
 	import * as ethers from 'ethers';
 	import { getProvider, fetchSigner } from '@wagmi/core';
@@ -41,7 +39,7 @@
 
 		const provider = getProvider();
 		if (!provider) {
-			console.warn(`ui-kit/AttestationMenu: No RPC provider found`);
+			console.warn(`swagmi/AttestationMenu: No RPC provider found`);
 			error = 'No RPC provider found';
 			return;
 		}
