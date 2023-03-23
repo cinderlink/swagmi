@@ -1,0 +1,65 @@
+{
+	"name": "swagmi",
+	"version": "0.0.1",
+	"scripts": {
+		"dev": "vite dev",
+		"build": "vite build && npm run package",
+		"preview": "vite preview",
+		"package": "svelte-kit sync && svelte-package && publint",
+		"prepublishOnly": "npm run package",
+		"test": "playwright test",
+		"check": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json",
+		"check:watch": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json --watch",
+		"test:unit": "vitest",
+		"lint": "prettier --plugin-search-dir . --check . && eslint .",
+		"format": "prettier --plugin-search-dir . --write ."
+	},
+	"exports": {
+		".": {
+			"types": "./dist/index.d.ts",
+			"svelte": "./dist/index.js"
+		}
+	},
+	"files": [
+		"dist"
+	],
+	"peerDependencies": {
+		"svelte": "^3.54.0"
+	},
+	"devDependencies": {
+		"@iconify-json/tabler": "^1.1.62",
+		"@playwright/test": "^1.28.1",
+		"@sveltejs/adapter-auto": "^2.0.0",
+		"@sveltejs/kit": "^1.5.0",
+		"@sveltejs/package": "^2.0.0",
+		"@typescript-eslint/eslint-plugin": "^5.45.0",
+		"@typescript-eslint/parser": "^5.45.0",
+		"@unocss/reset": "^0.49.8",
+		"@wagmi/cli": "^0.1.11",
+		"eslint": "^8.28.0",
+		"eslint-config-prettier": "^8.5.0",
+		"eslint-plugin-svelte3": "^4.0.0",
+		"prettier": "^2.8.0",
+		"prettier-plugin-svelte": "^2.8.1",
+		"publint": "^0.1.9",
+		"qrcode": "^1.5.1",
+		"rollup-plugin-polyfill-node": "^0.12.0",
+		"svelte": "^3.54.0",
+		"svelte-check": "^3.0.1",
+		"tslib": "^2.4.1",
+		"typescript": "^4.9.3",
+		"unocss": "^0.49.8",
+		"vite": "^4.0.0",
+		"vitest": "^0.25.3"
+	},
+	"svelte": "./dist/index.js",
+	"types": "./dist/index.d.ts",
+	"type": "module",
+	"dependencies": {
+		"@candor/ui-kit": "workspace:^0.1.2",
+		"@wagmi/core": "^0.10.1",
+		"@web3modal/ethereum": "^2.2.1",
+		"@web3modal/html": "^2.2.1",
+		"ethers": "^5.7.2"
+	}
+}
