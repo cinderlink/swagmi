@@ -14,10 +14,12 @@ export const web3modal = writable<ModalStore>({
 });
 export default web3modal;
 
+let mounted = false;
 export async function loadModal(projectId = 'swagmi') {
 	const state = get(wagmi);
-	const { loading, modal } = get(web3modal);
-	if (loading || modal) return;
+	if (mounted) return;
+	mounted = true;
+	console.info('loading modal');
 
 	web3modal.update((w) => {
 		w.loading = true;

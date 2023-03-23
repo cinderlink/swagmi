@@ -8,7 +8,6 @@
 
 	export let projectId = PUBLIC_WALLETCONNECT_PROJECT_ID;
 	$: if ($wagmi.client && !$web3modal.loading && !$web3modal.modal) {
-		console.info('loading modal');
 		loadModal(projectId);
 	}
 	onMount(() => {

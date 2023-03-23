@@ -2,6 +2,7 @@ import {
 	Client,
 	Connector,
 	createClient,
+	InjectedConnector,
 	type Chain,
 	type ChainProviderFn,
 	type Provider,
@@ -13,6 +14,7 @@ import {
 	PUBLIC_RPC_WS_URL,
 	PUBLIC_WALLETCONNECT_PROJECT_ID
 } from '$env/static/public';
+import { w3mConnectors } from '@web3modal/ethereum';
 
 export interface WagmiStore {
 	loading: boolean;
@@ -29,6 +31,7 @@ export const wagmi = writable<WagmiStore>({
 
 export default wagmi;
 
+let mounted = false;
 export async function load({
 	rpc,
 	chains,
@@ -38,6 +41,8 @@ export async function load({
 	chains?: Chain[];
 	connectors?: Connector[];
 } = {}) {
+	if (mounted) return;
+	mounted = true;
 	console.info('rpc url?', PUBLIC_RPC_URL);
 	wagmi.update((w) => {
 		w.loading = true;
@@ -78,15 +83,17 @@ export async function load({
 	}
 
 	if (!connectors) {
-		const { InjectedConnector } = await import('@wagmi/core/connectors/injected');
 		const { CoinbaseWalletConnector } = await import('@wagmi/core/connectors/coinbaseWallet');
 		const { LedgerConnector } = await import('@wagmi/core/connectors/ledger');
 		const { MetaMaskConnector } = await import('@wagmi/core/connectors/metaMask');
 		const { SafeConnector } = await import('@wagmi/core/connectors/safe');
-		const { WalletConnectConnector } = await import('@wagmi/core/connectors/walletConnect');
 
 		connectors = [
-			new InjectedConnector(),
+			...w3mConnectors({
+				chains: supportedChains,
+				projectId: PUBLIC_WALLETCONNECT_PROJECT_ID,
+				version: 2
+			}),
 			new CoinbaseWalletConnector({
 				options: {
 					appName: 'swagmi',
@@ -98,11 +105,6 @@ export async function load({
 			new SafeConnector({
 				options: {
 					allowedDomains: [/localhost:3000$/, /swagmi\.cinderlink\.com$/]
-				}
-			}),
-			new WalletConnectConnector({
-				options: {
-					projectId: PUBLIC_WALLETCONNECT_PROJECT_ID
 				}
 			})
 		];

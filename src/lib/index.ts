@@ -14,5 +14,6 @@ export { default as AttestationList } from './attestation/AttestationList.svelte
 
 export { openseaAsset, openseaRequest } from './opensea/api';
 
+export * from './wallet/modal';
 export * from './wallet/store';
 export * from './wagmi/store';
