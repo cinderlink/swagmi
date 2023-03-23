@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { BigNumber, type ContractReceipt } from 'ethers';
 	import Transaction from '$lib/transaction/Transaction.svelte';
-	import { Typography } from '@candor/ui-kit/content';
+	import { Typography } from '@cinderlink/ui-kit/content';
 	const receipt: ContractReceipt = {
 		to: '0x59b670e9fA9D0A427751Af201D676719a970857b',
 		from: '0x70997970C51812dc3A010C7d01b50e0d17dc79C8',

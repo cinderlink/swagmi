@@ -1,6 +1,6 @@
 <script lang="ts">
-	import { Typography, Panel } from '@candor/ui-kit/content';
-	import { Syntax } from '@candor/ui-kit/markup';
+	import { Typography, Panel } from '@cinderlink/ui-kit/content';
+	import { Syntax } from '@cinderlink/ui-kit/markup';
 </script>
 
 <Typography classes="text-purple-500 dark-(text-yellow-100) flex gap-2 items-center">

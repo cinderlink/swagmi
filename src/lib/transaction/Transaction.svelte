@@ -1,6 +1,6 @@
 <script lang="ts">
-	import { Typography, Panel } from '@candor/ui-kit/content';
-	import { LoadingIndicator } from '@candor/ui-kit/indicator';
+	import { Typography, Panel } from '@cinderlink/ui-kit/content';
+	import { LoadingIndicator } from '@cinderlink/ui-kit/indicator';
 	import { waitForTransaction } from '@wagmi/core';
 	import type { ContractReceipt, Transaction } from 'ethers';
 	import Receipt from './Receipt.svelte';

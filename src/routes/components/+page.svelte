@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { Typography, Card, Panel } from '@candor/ui-kit/content';
+	import { Typography, Card, Panel } from '@cinderlink/ui-kit/content';
 </script>
 
 <Typography classes="text-purple-400 dark-(text-yellow-100) flex gap-2 items-center">

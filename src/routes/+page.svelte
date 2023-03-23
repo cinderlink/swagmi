@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { Typography } from '@candor/ui-kit/content';
+	import { Typography } from '@cinderlink/ui-kit/content';
 </script>
 
 <Typography>svelte + wagmi = swagmi</Typography>

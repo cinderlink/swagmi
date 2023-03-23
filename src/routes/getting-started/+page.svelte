@@ -1,8 +1,8 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
 
-	import { Typography, Panel } from '@candor/ui-kit/content';
-	import { Syntax } from '@candor/ui-kit/markup';
+	import { Typography, Panel } from '@cinderlink/ui-kit/content';
+	import { Syntax } from '@cinderlink/ui-kit/markup';
 	import WalletConnectButton from '$lib/wallet/WalletConnectButton.svelte';
 	import WalletProvider from '$lib/wallet/WalletProvider.svelte';
 

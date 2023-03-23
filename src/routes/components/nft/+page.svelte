@@ -3,9 +3,9 @@
 
 	import Nft from '$lib/nft/NFT.svelte';
 
-	import { Typography } from '@candor/ui-kit/content';
-	import { Button } from '@candor/ui-kit/interactive';
-	import { Syntax } from '@candor/ui-kit/markup';
+	import { Typography } from '@cinderlink/ui-kit/content';
+	import { Button } from '@cinderlink/ui-kit/interactive';
+	import { Syntax } from '@cinderlink/ui-kit/markup';
 	import Wagmi from '$lib/wagmi/Wagmi.svelte';
 	import Wallet from '$lib/wallet/Wallet.svelte';
 	import ConnectModal from '$lib/wallet/ConnectModal.svelte';

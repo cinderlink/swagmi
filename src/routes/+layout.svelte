@@ -1,6 +1,6 @@
 <script lang="ts">
-	import { Theme } from '@candor/ui-kit/theme';
-	import { SidebarLayout } from '@candor/ui-kit/layout';
+	import { Theme } from '@cinderlink/ui-kit/theme';
+	import { SidebarLayout } from '@cinderlink/ui-kit/layout';
 	import './layout.css';
 </script>
 

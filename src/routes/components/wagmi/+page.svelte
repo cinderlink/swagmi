@@ -1,6 +1,6 @@
 <script lang="ts">
-	import { Typography } from '@candor/ui-kit/content';
-	import { Syntax } from '@candor/ui-kit/markup';
+	import { Typography } from '@cinderlink/ui-kit/content';
+	import { Syntax } from '@cinderlink/ui-kit/markup';
 	import Wagmi from '$lib/wagmi/Wagmi.svelte';
 </script>
 
