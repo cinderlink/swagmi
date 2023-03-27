@@ -3,15 +3,21 @@ import {
 	fetchBalance,
 	fetchEnsAvatar,
 	fetchEnsName,
+	fetchSigner,
 	getAccount,
 	watchAccount,
+	watchNetwork,
+	watchSigner,
 	type FetchBalanceResult
 } from '@wagmi/core';
+import type { Signer } from 'ethers';
 
 export interface WalletStore {
 	loading: boolean;
 	mounted: boolean;
 	connected: boolean;
+	chainId?: number;
+	signer?: Signer;
 	address?: `0x${string}`;
 	balance?: FetchBalanceResult;
 	balanceFormatted?: string;
@@ -36,21 +42,45 @@ export async function walletMount() {
 	});
 
 	const account = getAccount();
+	const signer = await fetchSigner();
 	if (account) {
 		wallet.update((w) => {
-			w.loading = false;
-			w.connected = true;
+			w.loading = !account.isConnected;
+			w.connected = account.isConnected && !!signer;
 			w.address = account.address;
 			return w;
 		});
 		await fetchAccountDetails();
 	}
 
+	let unwatchSigner: (() => void) | undefined;
+	const unwatchNetwork = watchNetwork(async (network) => {
+		wallet.update((w) => {
+			if (unwatchSigner) unwatchSigner();
+			w.chainId = network.chain?.id;
+			w.connected = !!w.chainId;
+			if (network.chain) {
+				unwatchSigner = watchSigner({ chainId: network.chain.id }, (signer) => {
+					if (signer) {
+						wallet.update((w) => {
+							w.loading = false;
+							w.connected = true;
+							w.signer = signer;
+							return w;
+						});
+					}
+				});
+			}
+			return w;
+		});
+	});
+
 	const unwatch = watchAccount(async (account) => {
 		const { address, isConnected } = account;
+		const signer = await fetchSigner();
 		wallet.update((w) => {
 			w.loading = !isConnected;
-			w.connected = isConnected;
+			w.connected = isConnected && !!signer;
 			w.address = address;
 			return w;
 		});
@@ -62,10 +92,11 @@ export async function walletMount() {
 			return w;
 		});
 	});
+
 	walletBalanceInterval = setInterval(async () => {
-		const { address } = get(wallet);
+		const { address, chainId } = get(wallet);
 		if (address) {
-			const balance = await fetchBalance({ address });
+			const balance = await fetchBalance({ address, chainId });
 			if (balance) {
 				wallet.update((w) => {
 					w.balance = balance;
@@ -81,6 +112,8 @@ export async function walletMount() {
 			return w;
 		});
 		unwatch();
+		unwatchNetwork();
+		unwatchSigner?.();
 		if (walletBalanceInterval) {
 			clearInterval(walletBalanceInterval);
 		}
