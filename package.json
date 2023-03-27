@@ -27,7 +27,7 @@
 		"svelte": "^3.54.0"
 	},
 	"devDependencies": {
-		"@cinderlink/ui-kit": "^0.0.3",
+		"@cinderlink/ui-kit": "^0.0.4",
 		"@iconify-json/tabler": "^1.1.68",
 		"@playwright/test": "^1.32.0",
 		"@sveltejs/adapter-auto": "^2.0.0",
