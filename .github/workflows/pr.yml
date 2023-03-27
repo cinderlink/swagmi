@@ -19,6 +19,9 @@ jobs:
 
     - name: Set up pnpm
       uses: pnpm/action-setup@v2
+      with:
+        version: 7
+        run_install: false
 
     - name: Cache pnpm modules
       uses: actions/cache@v3
