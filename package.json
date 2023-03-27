@@ -1,5 +1,6 @@
 {
 	"name": "swagmi",
+	"description": "svelte + wagmi = swagmi",
 	"version": "0.0.1",
 	"scripts": {
 		"dev": "vite dev --port 3003",
@@ -21,7 +22,8 @@
 		}
 	},
 	"files": [
-		"dist"
+		"dist",
+		"README"
 	],
 	"dependencies": {
 		"@wagmi/core": "^0.10.6",
