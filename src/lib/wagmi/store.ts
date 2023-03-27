@@ -8,12 +8,24 @@ import {
 	type WebSocketProvider
 } from '@wagmi/core';
 import { writable } from 'svelte/store';
-import {
-	PUBLIC_RPC_URL,
-	PUBLIC_RPC_WS_URL,
-	PUBLIC_WALLETCONNECT_PROJECT_ID
-} from '$env/static/public';
 import { w3mConnectors } from '@web3modal/ethereum';
+
+let RPC_URL = import.meta.env.RPC_URL || import.meta.env.VITE_RPC_URL;
+let RPC_WS_URL = import.meta.env.RPC_WS_URL || import.meta.env.VITE_RPC_WS_URL;
+let WALLETCONNECT_PROJECT_ID =
+	import.meta.env.WALLETCONNECT_PROJECT_ID || import.meta.env.VITE_WALLETCONNECT_PROJECT_ID;
+
+export function setRpcUrl(url: string) {
+	RPC_URL = url;
+}
+
+export function setRpcWsUrl(url: string) {
+	RPC_WS_URL = url;
+}
+
+export function setWalletConnectProjectId(id: string) {
+	WALLETCONNECT_PROJECT_ID = id;
+}
 
 export interface WagmiStore {
 	loading: boolean;
@@ -42,7 +54,7 @@ export async function load({
 } = {}) {
 	if (mounted) return;
 	mounted = true;
-	console.info('rpc url?', PUBLIC_RPC_URL);
+	console.info('rpc url?', RPC_URL);
 	wagmi.update((w) => {
 		w.loading = true;
 		return w;
@@ -60,19 +72,19 @@ export async function load({
 				rpc: () => rpc
 			})
 		);
-	} else if (PUBLIC_RPC_URL) {
-		console.info('PUBLIC_RPC_URL', PUBLIC_RPC_URL);
+	} else if (RPC_URL) {
+		console.info('RPC_URL', RPC_URL);
 		const { jsonRpcProvider } = await import('@wagmi/core/providers/jsonRpc');
 		providers.push(
 			jsonRpcProvider({
 				rpc: () => ({
-					http: PUBLIC_RPC_URL,
-					webSocket: PUBLIC_RPC_WS_URL
+					http: RPC_URL,
+					webSocket: RPC_WS_URL
 				})
 			})
 		);
 	} else {
-		console.info('public provider', PUBLIC_RPC_URL);
+		console.info('public provider', RPC_URL);
 		const { publicProvider } = await import('@wagmi/core/providers/public');
 		providers.push(publicProvider());
 	}
@@ -90,13 +102,13 @@ export async function load({
 		connectors = [
 			...w3mConnectors({
 				chains: supportedChains,
-				projectId: PUBLIC_WALLETCONNECT_PROJECT_ID,
+				projectId: WALLETCONNECT_PROJECT_ID,
 				version: 2
 			}),
 			new CoinbaseWalletConnector({
 				options: {
 					appName: 'swagmi',
-					jsonRpcUrl: PUBLIC_RPC_URL || 'http://localhost:8545'
+					jsonRpcUrl: RPC_URL || 'http://localhost:8545'
 				}
 			}),
 			new LedgerConnector(),

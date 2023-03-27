@@ -12,6 +12,9 @@ export default defineConfig({
 		target: 'esnext',
 		commonjsOptions: {
 			transformMixedEsModules: true
+		},
+		rollupOptions: {
+			external: ['svelte-highlight']
 		}
 	},
 	optimizeDeps: {

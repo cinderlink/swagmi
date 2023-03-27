@@ -4,9 +4,8 @@
 	import { wallet, walletMount } from './store';
 	import { onMount, setContext } from 'svelte';
 	import Wagmi from '$lib/wagmi/Wagmi.svelte';
-	import { PUBLIC_WALLETCONNECT_PROJECT_ID } from '$env/static/public';
 
-	export let projectId = PUBLIC_WALLETCONNECT_PROJECT_ID;
+	export let projectId = '';
 	$: if ($wagmi.client && !$web3modal.loading && !$web3modal.modal) {
 		loadModal(projectId);
 	}
