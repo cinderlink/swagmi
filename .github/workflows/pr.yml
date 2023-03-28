@@ -7,6 +7,8 @@ on:
 
 jobs:
   build:
+    env:
+      NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
     runs-on: ubuntu-latest
     steps:
     - name: Check out repository
@@ -32,7 +34,7 @@ jobs:
           ${{ runner.os }}-pnpm-
 
     - name: Install dependencies
-      run: pnpm install
+      run: pnpm install --no-frozen-lockfile
 
     # - name: Run tests
     #   run: pnpm test
