@@ -10,22 +10,7 @@ import {
 import { writable } from 'svelte/store';
 import { w3mConnectors } from '@web3modal/ethereum';
 
-let RPC_URL = import.meta.env.RPC_URL || import.meta.env.VITE_RPC_URL;
-let RPC_WS_URL = import.meta.env.RPC_WS_URL || import.meta.env.VITE_RPC_WS_URL;
-let WALLETCONNECT_PROJECT_ID =
-	import.meta.env.WALLETCONNECT_PROJECT_ID || import.meta.env.VITE_WALLETCONNECT_PROJECT_ID;
-
-export function setRpcUrl(url: string) {
-	RPC_URL = url;
-}
-
-export function setRpcWsUrl(url: string) {
-	RPC_WS_URL = url;
-}
-
-export function setWalletConnectProjectId(id: string) {
-	WALLETCONNECT_PROJECT_ID = id;
-}
+import { env } from '$env/dynamic/public';
 
 export interface WagmiStore {
 	loading: boolean;
@@ -43,55 +28,57 @@ export const wagmi = writable<WagmiStore>({
 export default wagmi;
 
 let mounted = false;
-export async function load({
-	rpc,
-	chains,
-	connectors
-}: {
-	rpc?: { http: string; webSocket?: string };
-	chains?: Chain[];
-	connectors?: Connector[];
-} = {}) {
+export async function load(
+	{
+		rpc,
+		chains,
+		chainId,
+		connectors,
+		projectId
+	}: {
+		chains: string[];
+		chainId: number;
+		rpc?: { http: string; webSocket?: string };
+		projectId?: string;
+		connectors?: Connector[];
+	} = {
+		chains: env.PUBLIC_WAGMI_CHAINS?.length ? env.PUBLIC_WAGMI_CHAINS.split(',') : ['forge'],
+		chainId: env.PUBLIC_WAGMI_DEFAULT_CHAIN_ID?.length
+			? parseInt(env.PUBLIC_WAGMI_DEFAULT_CHAIN_ID)
+			: 31337
+	}
+) {
 	if (mounted) return;
 	mounted = true;
-	console.info('rpc url?', RPC_URL);
 	wagmi.update((w) => {
 		w.loading = true;
 		return w;
 	});
-	console.info('importing wagmi');
 	const { configureChains } = await import('@wagmi/core');
 	const providers: ChainProviderFn[] = [];
-	let supportedChains: Chain[] = [];
-	console.info('configuring rpc');
 	if (rpc) {
-		console.info('RPC', rpc);
 		const { jsonRpcProvider } = await import('@wagmi/core/providers/jsonRpc');
 		providers.push(
 			jsonRpcProvider({
 				rpc: () => rpc
 			})
 		);
-	} else if (RPC_URL) {
-		console.info('RPC_URL', RPC_URL);
+	} else if (env.PUBLIC_WAGMI_RPC_URL?.length) {
 		const { jsonRpcProvider } = await import('@wagmi/core/providers/jsonRpc');
 		providers.push(
 			jsonRpcProvider({
 				rpc: () => ({
-					http: RPC_URL,
-					webSocket: RPC_WS_URL
+					http: env.PUBLIC_WAGMI_RPC_URL,
+					webSocket: env.PUBLIC_WAGMI_RPC_WS_URL
 				})
 			})
 		);
 	} else {
-		console.info('public provider', RPC_URL);
 		const { publicProvider } = await import('@wagmi/core/providers/public');
 		providers.push(publicProvider());
 	}
 
-	if (!chains) {
-		supportedChains = await loadDefaultChains();
-	}
+	const supportedChains = await loadChains(chains);
 
 	if (!connectors) {
 		const { CoinbaseWalletConnector } = await import('@wagmi/core/connectors/coinbaseWallet');
@@ -102,20 +89,25 @@ export async function load({
 		connectors = [
 			...w3mConnectors({
 				chains: supportedChains,
-				projectId: WALLETCONNECT_PROJECT_ID,
+				projectId: projectId || env.PUBLIC_WALLETCONNECT_PROJECT_ID,
 				version: 2
 			}),
 			new CoinbaseWalletConnector({
 				options: {
 					appName: 'swagmi',
-					jsonRpcUrl: RPC_URL || 'http://localhost:8545'
+					jsonRpcUrl: env.PUBLIC_WAGMI_RPC_URL?.length
+						? env.PUBLIC_WAGMI_RPC_URL
+						: 'http://localhost:8545',
+					chainId
 				}
 			}),
 			new LedgerConnector(),
 			new MetaMaskConnector(),
 			new SafeConnector({
 				options: {
-					allowedDomains: [/localhost:3000$/, /swagmi\.cinderlink\.com$/]
+					allowedDomains: env.PUBLIC_WAGMI_ALLOWED_DOMAINS?.length
+						? env.PUBLIC_WAGMI_ALLOWED_DOMAINS?.split(',').map((pattern) => new RegExp(pattern))
+						: [/localhost:3000$/, /swagmi\.cinderlink\.com$/]
 				}
 			})
 		];
@@ -144,13 +136,16 @@ export async function load({
 	}));
 }
 
-export async function loadDefaultChains() {
+export async function loadChains(names: string[]) {
 	const chains = await import('@wagmi/core/chains');
-	const defaultChains: Chain[] = [chains.mainnet, chains.polygon, chains.optimism, chains.arbitrum];
-	if (import.meta.env.DEV) {
-		defaultChains.push(chains.foundry, chains.sepolia, chains.optimismGoerli, chains.baseGoerli);
-	}
-	return defaultChains;
+	const loadedChains = names
+		.map((name) => {
+			if (chains[name as keyof typeof chains]) {
+				return chains[name as keyof typeof chains];
+			}
+		})
+		.filter(Boolean) as Chain[];
+	return loadedChains;
 }
 
 export function disconnect() {

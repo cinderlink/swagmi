@@ -1,16 +1,19 @@
 <script lang="ts">
 	import wagmi, { load } from './store';
 	import { onMount, setContext } from 'svelte';
-	import type { Chain, Connector } from '@wagmi/core';
+	import { env } from '$env/dynamic/public';
+	import type { Connector } from '@wagmi/core';
 	setContext('wagmi', wagmi);
 
-	export let rpc: { http: string; webSocket?: string } | undefined = undefined;
-	export let chains: Chain[] | undefined = undefined;
+	export let chains: string[] = env.PUBLIC_WAGMI_CHAINS?.split(',') || ['foundry'];
+	export let chainId: number = Number(env.PUBLIC_WAGMI_DEFAULT_CHAIN_ID) || 31337;
+	export let projectId: string = env.PUBLIC_WALLETCONNECT_PROJECT_ID;
 	export let connectors: Connector[] | undefined = undefined;
+	export let rpc: { http: string; webSocket?: string } | undefined = undefined;
 
 	onMount(async () => {
 		if (!$wagmi.client && !$wagmi.loading) {
-			await load({ rpc, chains, connectors });
+			await load({ rpc, chains, chainId, connectors, projectId });
 		}
 	});
 </script>
