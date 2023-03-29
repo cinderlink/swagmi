@@ -5,12 +5,14 @@ import {
 	fetchEnsName,
 	fetchSigner,
 	getAccount,
+	getNetwork,
 	watchAccount,
 	watchNetwork,
 	watchSigner,
 	type FetchBalanceResult
 } from '@wagmi/core';
 import type { Signer } from 'ethers';
+import wagmi from '$lib/wagmi/store';
 
 export interface WalletStore {
 	loading: boolean;
@@ -33,25 +35,21 @@ export const wallet = writable<WalletStore>({
 
 export let walletBalanceInterval: NodeJS.Timeout | undefined;
 export async function walletMount() {
-	const { mounted } = get(wallet);
-	if (mounted) return () => undefined;
+	const _wallet = get(wallet);
+	const _wagmi = get(wagmi);
+	if (!_wagmi.client) {
+		throw new Error('Called walletMount before wagmi client was ready');
+	}
+	if (_wallet.mounted || _wallet.loading) return () => undefined;
 	wallet.update((w) => {
-		w.mounted = true;
 		w.loading = true;
 		return w;
 	});
 
+	console.info('walletMount2', _wagmi.client, _wagmi.connected);
 	const account = getAccount();
 	const signer = await fetchSigner();
-	if (account) {
-		wallet.update((w) => {
-			w.loading = !account.isConnected;
-			w.connected = account.isConnected && !!signer;
-			w.address = account.address;
-			return w;
-		});
-		await fetchAccountDetails();
-	}
+	const network = getNetwork();
 
 	let unwatchSigner: (() => void) | undefined;
 	const unwatchNetwork = watchNetwork(async (network) => {
@@ -63,7 +61,6 @@ export async function walletMount() {
 				unwatchSigner = watchSigner({ chainId: network.chain.id }, (signer) => {
 					if (signer) {
 						wallet.update((w) => {
-							w.loading = false;
 							w.connected = true;
 							w.signer = signer;
 							return w;
@@ -79,18 +76,12 @@ export async function walletMount() {
 		const { address, isConnected } = account;
 		const signer = await fetchSigner();
 		wallet.update((w) => {
-			w.loading = !isConnected;
 			w.connected = isConnected && !!signer;
 			w.address = address;
 			return w;
 		});
 
 		await fetchAccountDetails();
-
-		wallet.update((w) => {
-			w.loading = false;
-			return w;
-		});
 	});
 
 	walletBalanceInterval = setInterval(async () => {
@@ -105,6 +96,18 @@ export async function walletMount() {
 			}
 		}
 	}, 5000);
+
+	if (account) {
+		wallet.update((w) => {
+			w.mounted = true;
+			w.loading = !account.isConnected;
+			w.connected = account.isConnected && !!signer;
+			w.address = account.address;
+			w.chainId = network.chain?.id;
+			fetchAccountDetails();
+			return w;
+		});
+	}
 
 	return () => {
 		wallet.update((w) => {
