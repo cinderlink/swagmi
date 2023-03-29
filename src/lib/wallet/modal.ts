@@ -17,7 +17,7 @@ export default web3modal;
 let mounted = false;
 export async function loadModal(projectId = 'swagmi') {
 	const state = get(wagmi);
-	if (mounted || !state.chains) return;
+	if (mounted || !state.chains || !state.connected || !state.client) return;
 	mounted = true;
 
 	web3modal.update((w) => {
