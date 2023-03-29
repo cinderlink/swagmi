@@ -4,19 +4,25 @@
 	import { setContext } from 'svelte';
 	import Wagmi from '$lib/wagmi/Wagmi.svelte';
 	import { LoadingIndicator } from '@cinderlink/ui-kit';
+	import { env } from '$env/dynamic/public';
 
-	export let projectId = '';
+	export let projectId = env.PUBLIC_WALLETCONNECT_PROJECT_ID || '';
 	setContext('web3modal', web3modal);
 </script>
 
-<Wagmi>
-	{#await loadModal(projectId)}
+<Wagmi let:connected>
+	{#if connected && !$web3modal.loaded && !$web3modal.loading}
+		{#await loadModal(projectId)}
+			<LoadingIndicator>Loading modal...</LoadingIndicator>
+		{/await}
+	{/if}
+	{#if $web3modal.loading || !connected || !$web3modal.loaded}
 		<slot name="loading">
 			<div class="flex flex-col items-center justify-center h-full">
 				<LoadingIndicator>Loading...</LoadingIndicator>
 			</div>
 		</slot>
-	{:then}
+	{:else}
 		<slot wagmi={$wagmi} loading={$web3modal.loading} modal={$web3modal.modal} />
-	{/await}
+	{/if}
 </Wagmi>

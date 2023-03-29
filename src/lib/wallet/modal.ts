@@ -5,11 +5,13 @@ import wagmi from '$lib/wagmi/store';
 
 export interface ModalStore {
 	loading: boolean;
+	loaded: boolean;
 	modal?: Web3Modal;
 }
 
 export const web3modal = writable<ModalStore>({
 	loading: false,
+	loaded: false,
 	modal: undefined as Web3Modal | undefined
 });
 export default web3modal;
@@ -30,6 +32,7 @@ export async function loadModal(projectId = 'swagmi') {
 	web3modal.update((w) => {
 		w.modal = w3m;
 		w.loading = false;
+		w.loaded = true;
 		return w;
 	});
 }
