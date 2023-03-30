@@ -1,7 +1,7 @@
 {
 	"name": "swagmi",
 	"description": "svelte + wagmi = swagmi",
-	"version": "0.0.6",
+	"version": "0.0.7",
 	"scripts": {
 		"dev": "vite dev --port 3003",
 		"build": "vite build && npm run package",
