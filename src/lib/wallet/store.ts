@@ -8,10 +8,9 @@ import {
 	getNetwork,
 	watchAccount,
 	watchNetwork,
-	watchSigner,
-	type FetchBalanceResult
+	watchSigner
 } from '@wagmi/core';
-import type { Signer } from 'ethers';
+import type * as ethers from 'ethers';
 import wagmi from '$lib/wagmi/store';
 
 export interface WalletStore {
@@ -19,9 +18,9 @@ export interface WalletStore {
 	mounted: boolean;
 	connected: boolean;
 	chainId?: number;
-	signer?: Signer;
+	signer?: ethers.Signer;
 	address?: `0x${string}`;
-	balance?: FetchBalanceResult;
+	balance?: ethers.BigNumberish;
 	balanceFormatted?: string;
 	displayName?: string;
 	avatar?: string;
@@ -30,7 +29,8 @@ export interface WalletStore {
 export const wallet = writable<WalletStore>({
 	loading: false,
 	connected: false,
-	mounted: false
+	mounted: false,
+	balanceFormatted: '0.0'
 });
 
 export let walletBalanceInterval: NodeJS.Timeout | undefined;
@@ -46,7 +46,6 @@ export async function walletMount() {
 		return w;
 	});
 
-	console.info('walletMount2', _wagmi.client, _wagmi.connected);
 	const account = getAccount();
 	const signer = await fetchSigner();
 	const network = getNetwork();
@@ -56,16 +55,22 @@ export async function walletMount() {
 		wallet.update((w) => {
 			if (unwatchSigner) unwatchSigner();
 			w.chainId = network.chain?.id;
-			w.connected = !!w.chainId;
+			console.info('walletMount: network changed', network.chain?.id);
 			if (network.chain) {
+				fetchSigner().then((signer) => {
+					wallet.update((w) => {
+						w.connected = !!signer;
+						w.signer = signer || undefined;
+						return w;
+					});
+				});
 				unwatchSigner = watchSigner({ chainId: network.chain.id }, (signer) => {
-					if (signer) {
-						wallet.update((w) => {
-							w.connected = true;
-							w.signer = signer;
-							return w;
-						});
-					}
+					console.info('walletMount: signer changed', !!signer);
+					wallet.update((w) => {
+						w.connected = !!signer;
+						w.signer = signer || undefined;
+						return w;
+					});
 				});
 			}
 			return w;
@@ -74,10 +79,10 @@ export async function walletMount() {
 
 	const unwatch = watchAccount(async (account) => {
 		const { address, isConnected } = account;
-		const signer = await fetchSigner();
 		wallet.update((w) => {
-			w.connected = isConnected && !!signer;
 			w.address = address;
+			w.connected = w.connected && isConnected;
+			console.info('walletMount: account changed', address, isConnected);
 			return w;
 		});
 
@@ -90,7 +95,8 @@ export async function walletMount() {
 			const balance = await fetchBalance({ address, chainId });
 			if (balance) {
 				wallet.update((w) => {
-					w.balance = balance;
+					w.balance = balance.value;
+					w.balanceFormatted = balance.formatted;
 					return w;
 				});
 			}
