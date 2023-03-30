@@ -9,15 +9,17 @@
 </script>
 
 <Contract {address} {abi} let:contract>
-	{#await contract?.[method](...args)}
-		<slot name="loading">
-			<LoadingIndicator />
-		</slot>
-	{:then result}
-		<slot {result} />
-	{:catch error}
-		<slot name="error" {error}>
-			<p class="text-red-500">Error: {error.message}</p>
-		</slot>
-	{/await}
+	{#key contract}
+		{#await contract?.[method](...args)}
+			<slot name="loading">
+				<LoadingIndicator />
+			</slot>
+		{:then result}
+			<slot {result} />
+		{:catch error}
+			<slot name="error" {error}>
+				<p class="text-red-500">Error: {error.message}</p>
+			</slot>
+		{/await}
+	{/key}
 </Contract>
