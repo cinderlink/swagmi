@@ -1,7 +1,7 @@
 <script lang="ts">
 	import * as ethers from 'ethers';
 	import { Typography, Syntax, LoadingIndicator, Button } from '@cinderlink/ui-kit';
-	import { CandorEarlyAccess } from '$lib/registry/contracts';
+	import CandorEarlyAccess from '$lib/contracts/84531/contracts/CandorEarlyAccess';
 	import { wallet } from '$lib/wallet/store';
 	import Wagmi from '$lib/wagmi/Wagmi.svelte';
 	import ContractWrite from '$lib/contract/ContractWrite.svelte';

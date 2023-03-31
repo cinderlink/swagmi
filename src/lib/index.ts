@@ -8,6 +8,7 @@ export { default as Wallet } from './wallet/Wallet.svelte';
 export { default as ConnectButton } from './wallet/ConnectButton.svelte';
 export { default as DisconnectButton } from './wallet/DisconnectButton.svelte';
 export { default as ConnectModal } from './wallet/ConnectModal.svelte';
+export { default as SwitchNetwork } from './wallet/SwitchNetwork.svelte';
 export { default as Wagmi } from './wagmi/Wagmi.svelte';
 export { default as AttestationMenu } from './attestation/AttestationMenu.svelte';
 export { default as AttestationList } from './attestation/AttestationList.svelte';

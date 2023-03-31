@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { CandorEarlyAccess } from '$lib/registry/contracts';
+	import CandorEarlyAccess from '$lib/contracts/84531/contracts/CandorEarlyAccess';
 
 	import Nft from '$lib/nft/NFT.svelte';
 

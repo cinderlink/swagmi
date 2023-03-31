@@ -15,7 +15,7 @@ import { env } from '$env/dynamic/public';
 export interface WagmiStore {
 	loading: boolean;
 	connected: boolean;
-	currentChain?: string;
+	currentChain?: Chain;
 	chains?: Chain[];
 	client?: Client<Provider, WebSocketProvider>;
 }
@@ -28,30 +28,28 @@ export const wagmi = writable<WagmiStore>({
 export default wagmi;
 
 let mounted = false;
-export async function load(
-	{
-		rpc,
-		chains,
-		chainId,
-		connectors,
-		projectId
-	}: {
-		chains: string[];
-		chainId: number;
-		rpc?: { http: string; webSocket?: string };
-		projectId?: string;
-		connectors?: Connector[];
-	} = {
-		chains: env.PUBLIC_WAGMI_CHAINS?.length ? env.PUBLIC_WAGMI_CHAINS.split(',') : ['forge'],
-		chainId: env.PUBLIC_WAGMI_DEFAULT_CHAIN_ID?.length
-			? parseInt(env.PUBLIC_WAGMI_DEFAULT_CHAIN_ID)
-			: 31337
-	}
-) {
+export async function load({
+	rpc,
+	chains,
+	currentChain,
+	connectors,
+	infuraApiKey,
+	alchemyApiKey,
+	projectId
+}: {
+	chains?: Chain[];
+	currentChain?: Chain;
+	rpc?: { http: string; webSocket?: string };
+	projectId?: string;
+	connectors?: Connector[];
+	infuraApiKey?: string;
+	alchemyApiKey?: string;
+} = {}) {
 	if (mounted) return;
 	mounted = true;
 	wagmi.update((w) => {
 		w.loading = true;
+		w.currentChain = currentChain;
 		return w;
 	});
 	const { configureChains } = await import('@wagmi/core');
@@ -63,7 +61,8 @@ export async function load(
 				rpc: () => rpc
 			})
 		);
-	} else if (env.PUBLIC_WAGMI_RPC_URL?.length) {
+	}
+	if (env.PUBLIC_WAGMI_RPC_URL?.length) {
 		const { jsonRpcProvider } = await import('@wagmi/core/providers/jsonRpc');
 		providers.push(
 			jsonRpcProvider({
@@ -73,12 +72,32 @@ export async function load(
 				})
 			})
 		);
-	} else {
-		const { publicProvider } = await import('@wagmi/core/providers/public');
-		providers.push(publicProvider());
 	}
+	if (infuraApiKey) {
+		const { infuraProvider } = await import('@wagmi/core/providers/infura');
+		providers.push(
+			infuraProvider({
+				apiKey: infuraApiKey
+			})
+		);
+	}
+	if (alchemyApiKey) {
+		const { alchemyProvider } = await import('@wagmi/core/providers/alchemy');
+		providers.push(
+			alchemyProvider({
+				apiKey: alchemyApiKey
+			})
+		);
+	}
+	const { publicProvider } = await import('@wagmi/core/providers/public');
+	providers.push(publicProvider());
 
-	const supportedChains = await loadChains(chains);
+	const allChains = await import('@wagmi/core/chains');
+	const {
+		chains: clientChains,
+		provider,
+		webSocketProvider
+	} = await configureChains(chains || [allChains.baseGoerli, allChains.foundry], providers);
 
 	if (!connectors) {
 		const { CoinbaseWalletConnector } = await import('@wagmi/core/connectors/coinbaseWallet');
@@ -88,17 +107,13 @@ export async function load(
 
 		connectors = [
 			...w3mConnectors({
-				chains: supportedChains,
+				chains: clientChains,
 				projectId: projectId || env.PUBLIC_WALLETCONNECT_PROJECT_ID,
 				version: 2
 			}),
 			new CoinbaseWalletConnector({
 				options: {
-					appName: 'swagmi',
-					jsonRpcUrl: env.PUBLIC_WAGMI_RPC_URL?.length
-						? env.PUBLIC_WAGMI_RPC_URL
-						: 'http://localhost:8545',
-					chainId
+					appName: 'swagmi'
 				}
 			}),
 			new LedgerConnector(),
@@ -107,17 +122,11 @@ export async function load(
 				options: {
 					allowedDomains: env.PUBLIC_WAGMI_ALLOWED_DOMAINS?.length
 						? env.PUBLIC_WAGMI_ALLOWED_DOMAINS?.split(',').map((pattern) => new RegExp(pattern))
-						: [/localhost:3000$/, /swagmi\.cinderlink\.com$/]
+						: [/localhost$/, /.*\.cinderlink\.com$/, /.*\.candor\.social$/]
 				}
 			})
 		];
 	}
-
-	const {
-		chains: clientChains,
-		provider,
-		webSocketProvider
-	} = await configureChains(supportedChains, providers);
 
 	const client = createClient<Provider, WebSocketProvider>({
 		autoConnect: true,
@@ -130,22 +139,10 @@ export async function load(
 		...current,
 		loading: false,
 		connected: true,
-		currentChain: clientChains[0].name,
+		currentChain: currentChain || clientChains[0],
 		chains: clientChains,
 		client
 	}));
-}
-
-export async function loadChains(names: string[]) {
-	const chains = await import('@wagmi/core/chains');
-	const loadedChains = names
-		.map((name) => {
-			if (chains[name as keyof typeof chains]) {
-				return chains[name as keyof typeof chains];
-			}
-		})
-		.filter(Boolean) as Chain[];
-	return loadedChains;
 }
 
 export function disconnect() {
