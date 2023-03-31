@@ -20,18 +20,23 @@ export interface WalletStore {
 	chainId?: number;
 	signer?: ethers.Signer;
 	address?: `0x${string}`;
-	balance?: ethers.BigNumberish;
-	balanceFormatted?: string;
 	displayName?: string;
 	avatar?: string;
+}
+
+export interface BalanceStore {
+	value?: ethers.BigNumberish;
+	formatted?: string;
 }
 
 export const wallet = writable<WalletStore>({
 	loading: false,
 	connected: false,
-	mounted: false,
-	balanceFormatted: '0.0'
+	mounted: false
 });
+export default wallet;
+
+export const walletBalance = writable<BalanceStore>({});
 
 export let walletBalanceInterval: NodeJS.Timeout | undefined;
 export async function walletMount() {
@@ -53,7 +58,7 @@ export async function walletMount() {
 	let unwatchSigner: (() => void) | undefined;
 	const unwatchNetwork = watchNetwork(async (network) => {
 		wagmi.update((w) => {
-			w.currentChain = network.chain?.name;
+			w.currentChain = network.chain;
 			return w;
 		});
 		wallet.update((w) => {
@@ -98,9 +103,9 @@ export async function walletMount() {
 		if (address) {
 			const balance = await fetchBalance({ address, chainId });
 			if (balance) {
-				wallet.update((w) => {
-					w.balance = balance.value;
-					w.balanceFormatted = balance.formatted;
+				walletBalance.update((w) => {
+					w.value = balance.value;
+					w.formatted = balance.formatted;
 					return w;
 				});
 			}
@@ -158,11 +163,15 @@ export function disconnectWallet() {
 		w.loading = false;
 		w.connected = false;
 		w.mounted = false;
-		w.balance = undefined;
-		w.balanceFormatted = undefined;
 		w.displayName = undefined;
 		w.avatar = undefined;
 		w.address = undefined;
+		return w;
+	});
+
+	walletBalance.update((w) => {
+		w.value = undefined;
+		w.formatted = undefined;
 		return w;
 	});
 }
