@@ -1,25 +1,29 @@
 <script lang="ts">
 	import type { Contract } from 'ethers';
-	import { fetchSigner, getContract, getProvider } from '@wagmi/core';
-	import { onMount, setContext } from 'svelte';
+	import { getContract } from '@wagmi/core';
+	import { setContext } from 'svelte';
 	import { writable, type Writable } from 'svelte/store';
+	import wallet from '$lib/wallet/store';
+	import { LoadingIndicator } from '@cinderlink/ui-kit';
 
 	export let address: string;
 	export let abi: any;
-
-	let loading = true;
-	let contract: Writable<Contract | undefined> = writable(undefined);
+	export let contract: Writable<Contract | undefined> = writable(undefined);
 	setContext('contract', contract);
 
-	onMount(async () => {
-		const signerOrProvider = (await fetchSigner()) || getProvider();
+	$: if ($wallet.signer) {
 		$contract = getContract({
 			address,
 			abi,
-			signerOrProvider
+			signerOrProvider: $wallet.signer
 		});
-		loading = false;
-	});
+	}
 </script>
 
-<slot {loading} contract={$contract} />
+{#if $contract}
+	<slot contract={$contract} />
+{:else}
+	<slot name="loading">
+		<LoadingIndicator>Loading contract...</LoadingIndicator>
+	</slot>
+{/if}

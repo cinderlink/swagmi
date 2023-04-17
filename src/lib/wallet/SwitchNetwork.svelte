@@ -28,7 +28,8 @@
 	<slot name="loading">
 		<LoadingIndicator>Switching network...</LoadingIndicator>
 	</slot>
-{:else if $wallet.chainId === chainId}
+{:else if $wallet.chainId === chainId && $wagmi.currentChain?.id === chainId}
+	(chain valid)
 	<slot />
 {:else}
 	<slot name="switch" {run} {error}>
