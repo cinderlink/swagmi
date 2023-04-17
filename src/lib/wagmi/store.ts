@@ -139,7 +139,7 @@ export async function load({
 		...current,
 		loading: false,
 		connected: true,
-		currentChain: currentChain || clientChains[0],
+		currentChain: currentChain || undefined,
 		chains: clientChains,
 		client
 	}));

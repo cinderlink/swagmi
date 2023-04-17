@@ -55,6 +55,22 @@ export async function walletMount() {
 	const signer = await fetchSigner();
 	const network = getNetwork();
 
+	const currentNetwork = await getNetwork();
+	const currentAccount = await getAccount();
+	wagmi.update((w) => {
+		w.currentChain = currentNetwork.chain;
+		return w;
+	});
+	wallet.update((w) => {
+		w.address = currentAccount.address;
+		w.connected = !!signer;
+		w.signer = signer || undefined;
+		w.chainId = currentNetwork.chain?.id;
+		w.mounted = true;
+		w.loading = false;
+		return w;
+	});
+
 	let unwatchSigner: (() => void) | undefined;
 	const unwatchNetwork = watchNetwork(async (network) => {
 		wagmi.update((w) => {
