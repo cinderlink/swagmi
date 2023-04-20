@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { Theme, SidebarLayout } from '@cinderlink/ui-kit';
+	import 'virtual:uno.css';
 	import './layout.css';
 </script>
 
