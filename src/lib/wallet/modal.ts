@@ -28,7 +28,7 @@ export async function loadModal(projectId = 'swagmi') {
 	});
 
 	const ethereumClient = new EthereumClient(state.client, state.chains);
-	const w3m = new Web3Modal({ projectId }, ethereumClient);
+	const w3m = new Web3Modal({ projectId }, ethereumClient as any);
 	web3modal.update((w) => {
 		w.modal = w3m;
 		w.loading = false;

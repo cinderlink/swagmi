@@ -9,7 +9,10 @@
 		{#if !wallet}
 			<LoadingIndicator />
 		{:else if !wallet.connected}
-			<Button on:click={() => modal?.openModal()}>Connect</Button>
+			<Button width="w-full" size="lg" variant="green" on:click={() => modal?.openModal()} justify="justify-center">
+				<div class="i-logos-ethereum"></div>
+				Sign In with Ethereum
+			</Button>
 		{:else}
 			<slot name="connected">Connected</slot>
 		{/if}

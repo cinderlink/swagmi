@@ -108,7 +108,7 @@ export async function load({
 		connectors = [
 			...w3mConnectors({
 				chains: clientChains,
-				projectId: projectId || env.PUBLIC_WALLETCONNECT_PROJECT_ID,
+				projectId: projectId || env.PUBLIC_WALLETCONNECT_PROJECT_ID || '',
 				version: 2
 			}),
 			new CoinbaseWalletConnector({
@@ -129,7 +129,6 @@ export async function load({
 	}
 
 	const client = createClient<Provider, WebSocketProvider>({
-		autoConnect: true,
 		provider,
 		connectors,
 		webSocketProvider

@@ -10,8 +10,8 @@
 	setContext('web3modal', web3modal);
 </script>
 
-<Wagmi let:connected>
-	{#if connected && !$web3modal.loaded && !$web3modal.loading}
+<Wagmi let:connected let:client>
+	{#if connected && client && !$web3modal.loaded && !$web3modal.loading}
 		{#await loadModal(projectId)}
 			<LoadingIndicator>Loading modal...</LoadingIndicator>
 		{/await}
