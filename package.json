@@ -1,7 +1,7 @@
 {
 	"name": "swagmi",
 	"description": "svelte + wagmi = swagmi",
-	"version": "0.0.18",
+	"version": "0.0.19",
 	"scripts": {
 		"dev": "vite dev --port 3003",
 		"build": "vite build && npm run package",
@@ -28,8 +28,8 @@
 	],
 	"dependencies": {
 		"@unocss/reset": "^0.51.8",
-		"@web3modal/ethereum": "^2.3.6",
-		"@web3modal/html": "^2.3.6",
+		"@web3modal/ethereum": "^2.3.7",
+		"@web3modal/html": "^2.3.7",
 		"ethers": "^5.7.2",
 		"unocss": "^0.51.8"
 	},
@@ -46,7 +46,7 @@
 		"@iconify-json/tabler": "^1.1.74",
 		"@playwright/test": "^1.32.3",
 		"@sveltejs/adapter-auto": "^2.0.1",
-		"@sveltejs/kit": "^1.15.8",
+		"@sveltejs/kit": "^1.15.9",
 		"@sveltejs/package": "^2.0.2",
 		"@typescript-eslint/eslint-plugin": "^5.59.1",
 		"@typescript-eslint/parser": "^5.59.1",
@@ -63,7 +63,7 @@
 		"svelte-check": "^3.2.0",
 		"tslib": "^2.5.0",
 		"typescript": "^5.0.4",
-		"vite": "^4.3.2",
+		"vite": "^4.3.3",
 		"vitest": "^0.30.1"
 	},
 	"svelte": "./dist/index.js",
