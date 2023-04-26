@@ -131,7 +131,8 @@ export async function load({
 	const client = createClient<Provider, WebSocketProvider>({
 		provider,
 		connectors,
-		webSocketProvider
+		webSocketProvider,
+		autoConnect: true
 	});
 
 	wagmi.update((current) => ({
