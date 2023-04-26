@@ -1,7 +1,7 @@
 {
 	"name": "swagmi",
 	"description": "svelte + wagmi = swagmi",
-	"version": "0.0.17",
+	"version": "0.0.18",
 	"scripts": {
 		"dev": "vite dev --port 3003",
 		"build": "vite build && npm run package",
@@ -34,7 +34,7 @@
 		"unocss": "^0.51.8"
 	},
 	"peerDependencies": {
-		"@cinderlink/ui-kit": "^0.0.23",
+		"@cinderlink/ui-kit": "^0.0.24",
 		"@sveltejs/kit": "^1.14.0",
 		"@unocss/reset": "^0.49.8",
 		"@wagmi/core": "^0.10.10",
@@ -42,7 +42,7 @@
 		"unocss": "^0.49.8"
 	},
 	"devDependencies": {
-		"@cinderlink/ui-kit": "^0.0.23",
+		"@cinderlink/ui-kit": "^0.0.24",
 		"@iconify-json/tabler": "^1.1.74",
 		"@playwright/test": "^1.32.3",
 		"@sveltejs/adapter-auto": "^2.0.1",
