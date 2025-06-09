@@ -11,11 +11,11 @@
 
 			<nav class="flex-1">
 				<a href="/stores">
-					<div class="i-tabler-activity-heartbeat" />
+					<div class="i-tabler-activity-heartbeat"></div>
 					Stores
 				</a>
 				<a href="/components">
-					<div class="i-tabler-components" />
+					<div class="i-tabler-components"></div>
 					Components
 				</a>
 			</nav>

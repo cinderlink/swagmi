@@ -4,13 +4,6 @@
 	import { stringToBytes, keccak256, toHex, pad } from 'viem';
 	import { getProvider, fetchSigner } from '@wagmi/core';
 
-	export let address: string;
-	export let label: string;
-	export let size: Size;
-	export let align: 'left' | 'right' = 'left';
-
-	export let contract: any; // Contract interface from wagmi/viem
-
 	interface AttestationOption {
 		key: string;
 		label: string;
@@ -18,7 +11,21 @@
 		valueFn?: (address: string) => number;
 	}
 
-	export let options: AttestationOption[] = [];
+	let {
+		address,
+		label,
+		size,
+		align = 'left',
+		contract,
+		options = []
+	}: {
+		address: string;
+		label: string;
+		size: Size;
+		align?: 'left' | 'right';
+		contract: any; // Contract interface from wagmi/viem
+		options?: AttestationOption[];
+	} = $props();
 
 	let attesting = false;
 	let error: string | undefined = undefined;

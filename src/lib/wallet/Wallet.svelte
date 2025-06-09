@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { wallet, walletMount } from './store';
+	import { wallet, walletMount } from './store.svelte';
 	import { onMount, setContext } from 'svelte';
 	import Wagmi from '$lib/wagmi/Wagmi.svelte';
 	setContext('wallet', wallet);
@@ -7,5 +7,5 @@
 </script>
 
 <Wagmi>
-	<slot wallet={$wallet} />
+	<slot wallet={wallet} />
 </Wagmi>

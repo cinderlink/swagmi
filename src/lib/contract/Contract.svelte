@@ -3,27 +3,31 @@
 	import { getWalletClient, getPublicClient } from '@wagmi/core';
 	import { setContext } from 'svelte';
 	import { writable, type Writable } from 'svelte/store';
-	import wallet from '$lib/wallet/store';
-	import wagmi from '$lib/wagmi/store';
+	import wallet from '$lib/wallet/store.svelte';
+	import wagmi from '$lib/wagmi/store.svelte';
 	import { LoadingIndicator } from '@cinderlink/ui-kit';
 	import type { Abi, Address } from 'viem';
 
-	export let address: Address;
-	export let abi: Abi;
-	export let contract: Writable<any> = writable(undefined);
+	let { address, abi, contract = writable(undefined) }: {
+		address: Address;
+		abi: Abi;
+		contract?: Writable<any>;
+	} = $props();
 	setContext('contract', contract);
 
-	$: if ($wagmi.config && $wallet.connected) {
-		updateContract();
-	}
+	$effect(() => {
+		if (wagmi.config && wallet.connected) {
+			updateContract();
+		}
+	});
 
 	async function updateContract() {
-		const { config } = $wagmi;
+		const { config } = wagmi;
 		if (!config) return;
 
 		try {
 			const publicClient = getPublicClient(config);
-			const walletClient = $wallet.connected ? await getWalletClient(config) : undefined;
+			const walletClient = wallet.connected ? await getWalletClient(config) : undefined;
 
 			$contract = getContract({
 				address,

@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { Typography, Syntax, LoadingIndicator } from '@cinderlink/ui-kit';
 	import CandorEarlyAccess from '$lib/contracts/84531/contracts/CandorEarlyAccess';
-	import { wallet } from '$lib/wallet/store';
+	import { wallet } from '$lib/wallet/store.svelte';
 	import Wagmi from '$lib/wagmi/Wagmi.svelte';
 	import Contract from '$lib/contract/Contract.svelte';
 	import ConnectButton from '$lib/wallet/ConnectButton.svelte';
@@ -19,11 +19,11 @@
 </script>
 
 <Wagmi let:connected let:client>
-	{#if connected && $wallet.address}
+	{#if connected && wallet.address}
 		<Contract address={CandorEarlyAccess.address} abi={CandorEarlyAccess.abi} let:contract>
 			{#if contract}
-				{#await contract.balanceOf($wallet.address)}
-					<div class="i-tabler-loader" />
+				{#await contract.balanceOf(wallet.address)}
+					<div class="i-tabler-loader"></div>
 				{:then balance}
 					{#if balance}
 						<p class="text-green-500">Balance: \${balance}</p>
@@ -49,11 +49,11 @@
 <section class="mt-4">
 	<Typography el="h4">Output</Typography>
 	<Wagmi let:connected let:client>
-		{#if connected && $wallet.address}
+		{#if connected && wallet.address}
 			<Contract address={CandorEarlyAccess.address} abi={CandorEarlyAccess.abi} let:contract>
 				{#if contract}
-					{#await contract.balanceOf($wallet.address)}
-						<div class="i-tabler-loader" />
+					{#await contract.balanceOf(wallet.address)}
+						<div class="i-tabler-loader"></div>
 					{:then balance}
 						{#if balance}
 							<p class="text-green-500">Balance: ${balance}</p>

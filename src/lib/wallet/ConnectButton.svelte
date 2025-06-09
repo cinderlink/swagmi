@@ -23,7 +23,7 @@
 					<LoadingIndicator size="sm" />
 					Connecting...
 				{:else}
-					<div class="i-logos-ethereum" />
+					<div class="i-logos-ethereum"></div>
 					Sign In with Ethereum
 				{/if}
 			</Button>

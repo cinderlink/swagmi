@@ -3,7 +3,7 @@
 </script>
 
 <Typography classes="text-purple-400 dark-(text-yellow-100) flex gap-2 items-center">
-	<div class="i-tabler-components" />
+	<div class="i-tabler-components"></div>
 	Components
 </Typography>
 

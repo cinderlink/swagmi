@@ -4,7 +4,7 @@
 </script>
 
 <Typography classes="text-purple-500 dark-(text-yellow-100) flex gap-2 items-center">
-	<div class="i-tabler-activity-heartbeat" />
+	<div class="i-tabler-activity-heartbeat"></div>
 	Stores
 </Typography>
 <Typography el="p">
@@ -14,11 +14,11 @@
 
 <hr class="my-6" />
 
-<Typography el="h2" classes="text-purple-400 dark-(text-green-100)">$wagmi</Typography>
+<Typography el="h2" classes="text-purple-400 dark-(text-green-100)">wagmi</Typography>
 <Panel>
 	<section id="wagmi">
 		<Typography el="p">
-			<span class="text-purple-400 dark-(text-green-100)">$wagmi</span> is a Svelte store that provides
+			<span class="text-purple-400 dark-(text-green-100)">wagmi</span> is a Svelte store that provides
 			access to the @wagmi/core client and connection state.
 		</Typography>
 
@@ -35,7 +35,7 @@
 
 		<Typography el="h4" classes="mt-4 text-purple-100 dark-(text-purple-200)">Functions</Typography>
 		<Typography el="p"
-			>The $wagmi store exports a <strong>load</strong> function that can be used to initialize the @wagmi/core
+			>The wagmi store exports a <strong>load</strong> function that can be used to initialize the @wagmi/core
 			library.</Typography
 		>
 		<Syntax
@@ -45,7 +45,7 @@ import { onMount } from 'svelte';
 onMount(async () => {
     await load();
 });
-$: console.log($wagmi.client);
+$: console.log(wagmi.client);
 `}
 		/>
 	</section>
@@ -53,11 +53,11 @@ $: console.log($wagmi.client);
 
 <hr class="my-6" />
 
-<Typography el="h2" classes="text-purple-400 dark-(text-green-100)">$wallet</Typography>
+<Typography el="h2" classes="text-purple-400 dark-(text-green-100)">wallet</Typography>
 <Panel>
 	<section id="wallet">
 		<Typography el="p">
-			<span class="text-purple-400 dark-(text-green-100)">$wallet</span> is a Svelte store that provides
+			<span class="text-purple-400 dark-(text-green-100)">wallet</span> is a Svelte store that provides
 			access to the connected @wagmi/core wallet, balance, display name, and avatar.
 		</Typography>
 
@@ -77,7 +77,7 @@ $: console.log($wagmi.client);
 
 		<Typography el="h4" classes="mt-4 text-purple-100 dark-(text-purple-200)">Functions</Typography>
 		<Typography el="p">
-			The <span class="text-purple-400 dark-(text-green-100)">$wallet</span> exports the following functions:
+			The <span class="text-purple-400 dark-(text-green-100)">wallet</span> exports the following functions:
 		</Typography>
 		<ul>
 			<li>
@@ -105,7 +105,7 @@ import { onMount } from 'svelte';
 onMount(walletMount);
 </script>
 
-{#if $wallet.connected}
+{#if wallet.connected}
     <button on:click={disconnect}>Disconnect</button>
 {:else}
     <button on:click={connect}>Connect</button>

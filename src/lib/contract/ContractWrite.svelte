@@ -3,25 +3,35 @@
 	import { LoadingIndicator } from '@cinderlink/ui-kit';
 	import Contract from './Contract.svelte';
 	import { writeContract, waitForTransactionReceipt } from '@wagmi/core';
-	import wagmi from '$lib/wagmi/store';
+	import wagmi from '$lib/wagmi/store.svelte';
 	import type { Abi, Address, Hash } from 'viem';
 	import type { Writable } from 'svelte/store';
 	import { createEventDispatcher } from 'svelte';
 
-	export let abi: Abi;
-	export let address: Address;
-	export let contract: Writable<any> | undefined = undefined;
-	export let functionName: string;
-	export let args: readonly unknown[] = [];
-	export let value: bigint | undefined = undefined;
+	let {
+		abi,
+		address,
+		contract = undefined,
+		functionName,
+		args = [],
+		value = undefined,
+		receipt = undefined,
+		hash = undefined
+	}: {
+		abi: Abi;
+		address: Address;
+		contract?: Writable<any>;
+		functionName: string;
+		args?: readonly unknown[];
+		value?: bigint;
+		receipt?: any;
+		hash?: Hash;
+	} = $props();
 
 	const dispatch = createEventDispatcher();
 
-	let submitting = false;
-	let error: Error | undefined = undefined;
-
-	export let receipt: any = undefined;
-	export let hash: Hash | undefined = undefined;
+	let submitting = $state(false);
+	let error: Error | undefined = $state();
 
 	export const run = async (...additionalArgs: unknown[]) => {
 		const { config } = $wagmi;

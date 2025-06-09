@@ -1,8 +1,11 @@
 <script lang="ts">
 	import type { Log } from 'viem';
 
-	export let address: string;
-	export let contract: any; // Contract interface from wagmi/viem
+	let { address, contract }: {
+		address: string;
+		contract: any; // Contract interface from wagmi/viem
+	} = $props();
+	
 	export const map: Record<
 		string,
 		{
@@ -21,10 +24,10 @@
 	}
 
 	let attestations: Log[] = [];
-	$: {
+	$effect(() => {
 		getUserAttestations(address).then((logs) => {
 			attestations = logs;
 		});
 		console.info('attestations', attestations);
-	}
+	});
 </script>

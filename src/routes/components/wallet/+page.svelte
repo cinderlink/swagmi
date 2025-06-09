@@ -9,7 +9,7 @@
 
 <Typography>&lt;Wallet /&gt;</Typography>
 <Typography el="p">
-	Access the <a href="/stores#wallet">$wallet</a> store and add it to application context.
+	Access the <a href="/stores#wallet">wallet</a> store and add it to application context.
 </Typography>
 
 <section class="mt-4">
@@ -21,8 +21,8 @@
 </script>
 
 <Wallet let:wallet>
-    {#if $wallet.connected}
-        <p class="text-green-500">Connected as {$wallet.address}</p>
+    {#if wallet.connected}
+        <p class="text-green-500">Connected as {wallet.address}</p>
     {:else}
         <p class="text-purple-100">Not connected.</p>
     {/if}
@@ -47,7 +47,7 @@
 				</Wallet>
 			</ConnectModal>
 		{:else}
-			<div class="i-tabler-loader animate-spin text-2xl" />
+			<div class="i-tabler-loader animate-spin text-2xl"></div>
 		{/if}
 	</Wagmi>
 </section>

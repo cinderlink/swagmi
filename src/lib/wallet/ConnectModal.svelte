@@ -1,6 +1,6 @@
 <script lang="ts">
-	import wagmi from '$lib/wagmi/store';
-	import { connectWallet } from '$lib/wallet/store';
+	import wagmi from '$lib/wagmi/store.svelte';
+	import { connectWallet } from '$lib/wallet/store.svelte';
 	import { setContext } from 'svelte';
 	import Wagmi from '$lib/wagmi/Wagmi.svelte';
 	import { LoadingIndicator } from '@cinderlink/ui-kit';
@@ -31,7 +31,7 @@
 			</div>
 		</slot>
 	{:else}
-		<slot wagmi={$wagmi} {openModal} {closeModal} modal={{ openModal, closeModal }} />
+		<slot wagmi={wagmi} {openModal} {closeModal} modal={{ openModal, closeModal }} />
 	{/if}
 
 	{#if showModal && config}

@@ -4,10 +4,12 @@
 	import { openseaAsset } from '$lib/opensea/api';
 	import ContractRead from '$lib/contract/ContractRead.svelte';
 
-	export let contract: string;
-	export let abi: string;
-	export let tokenId: string;
-	export let source: 'opensea' | 'contract' = 'opensea';
+	let { contract, abi, tokenId, source = 'opensea' }: {
+		contract: string;
+		abi: string;
+		tokenId: string;
+		source?: 'opensea' | 'contract';
+	} = $props();
 </script>
 
 {#if source === 'opensea'}
