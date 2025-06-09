@@ -1,5 +1,5 @@
 <script lang="ts">
-	import * as ethers from 'ethers';
+	import { parseEther } from 'viem';
 	import { Typography, Syntax, LoadingIndicator, Button } from '@cinderlink/ui-kit';
 	import CandorEarlyAccess from '$lib/contracts/84531/contracts/CandorEarlyAccess';
 	import { wallet } from '$lib/wallet/store';
@@ -17,7 +17,7 @@
 	<Syntax
 		language="svelte"
 		code={`<script>
-    import { Contract } from "swagmi";
+    import { ContractWrite } from "swagmi";
 </script>
 
 <Wagmi let:connected let:client>
@@ -54,7 +54,7 @@
 			<ContractWrite
 				method="mint"
 				args={[$wallet.address]}
-				value={ethers.BigNumber.from('10000000000000000')}
+				value={parseEther('0.01')}
 				address={CandorEarlyAccess.address}
 				abi={CandorEarlyAccess.abi}
 				let:run

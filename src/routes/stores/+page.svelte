@@ -1,4 +1,5 @@
 <script lang="ts">
+	/* eslint-disable @typescript-eslint/no-unused-vars */
 	import { Typography, Panel, Syntax } from '@cinderlink/ui-kit';
 </script>
 

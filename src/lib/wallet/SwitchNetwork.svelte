@@ -1,35 +1,38 @@
 <script lang="ts">
 	import { Button, LoadingIndicator } from '@cinderlink/ui-kit';
-	import { switchNetwork } from '@wagmi/core';
+	import { switchChain } from '@wagmi/core';
 	import wagmi from '$lib/wagmi/store';
 	import wallet from '$lib/wallet/store';
 
 	export let chainId: number;
 
-	let switching = false;
-	let error: Error | undefined = undefined;
 	async function run() {
-		if (!$wagmi.client?.connector) {
-			error = new Error('No connector found');
+		const { config } = $wagmi;
+		if (!config) {
+			error = new Error('Wagmi config not available');
+			return;
 		}
 		if (switching) {
 			return;
 		}
 		switching = true;
-		await switchNetwork({ chainId }).catch((e: Error) => {
-			error = e;
-			switching = false;
-		});
+		try {
+			await switchChain(config, { chainId });
+		} catch (e) {
+			error = e as Error;
+		}
 		switching = false;
 	}
+
+	let switching = false;
+	let error: Error | undefined = undefined;
 </script>
 
 {#if switching}
 	<slot name="loading">
 		<LoadingIndicator>Switching network...</LoadingIndicator>
 	</slot>
-{:else if $wallet.chainId === chainId && $wagmi.currentChain?.id === chainId}
-	(chain valid)
+{:else if $wallet.chainId === chainId}
 	<slot />
 {:else}
 	<slot name="switch" {run} {error}>

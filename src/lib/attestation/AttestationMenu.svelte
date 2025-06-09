@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { LoadingIndicator, Button, Dropdown, List, theme } from '@cinderlink/ui-kit';
 	import type { Size } from '@cinderlink/ui-kit';
-	import * as ethers from 'ethers';
+	import { stringToBytes, keccak256, toHex, pad } from 'viem';
 	import { getProvider, fetchSigner } from '@wagmi/core';
 
 	export let address: string;
@@ -9,7 +9,7 @@
 	export let size: Size;
 	export let align: 'left' | 'right' = 'left';
 
-	export let contract: ethers.Contract;
+	export let contract: any; // Contract interface from wagmi/viem
 
 	interface AttestationOption {
 		key: string;
@@ -24,13 +24,15 @@
 	let error: string | undefined = undefined;
 	let success: boolean = false;
 
+	// eslint-disable-next-line no-inner-declarations
 	function encodeRawKey(key: string) {
-		if (key.length < 32) return ethers.utils.formatBytes32String(key);
+		if (key.length < 32) return pad(toHex(stringToBytes(key)), { size: 32 });
 
-		const hash = ethers.utils.keccak256(ethers.utils.toUtf8Bytes(key));
+		const hash = keccak256(stringToBytes(key));
 		return hash.slice(0, 64) + 'ff';
 	}
 
+	// eslint-disable-next-line no-inner-declarations
 	async function selectAttestationOption(option: AttestationOption) {
 		if (!contract) {
 			error = 'No AttestationStation contract found';

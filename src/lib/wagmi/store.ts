@@ -1,154 +1,90 @@
-import {
-	Client,
-	Connector,
-	createClient,
-	type Chain,
-	type ChainProviderFn,
-	type Provider,
-	type WebSocketProvider
-} from '@wagmi/core';
+import { createConfig, http, type Config } from '@wagmi/core';
 import { writable } from 'svelte/store';
-import { w3mConnectors } from '@web3modal/ethereum';
+import { coinbaseWallet, injected, walletConnect, safe } from '@wagmi/connectors';
+import { mainnet, base, baseGoerli, foundry } from '@wagmi/core/chains';
+import type { Chain } from '@wagmi/core/chains';
 
 import { env } from '$env/dynamic/public';
 
 export interface WagmiStore {
 	loading: boolean;
 	connected: boolean;
-	currentChain?: Chain;
-	chains?: Chain[];
-	client?: Client<Provider, WebSocketProvider>;
+	config?: Config;
+	chains: Chain[];
 }
 
 export const wagmi = writable<WagmiStore>({
 	loading: false,
-	connected: false
+	connected: false,
+	chains: []
 });
 
 export default wagmi;
 
 let mounted = false;
 export async function load({
-	rpc,
-	chains,
-	currentChain,
-	connectors,
-	infuraApiKey,
-	alchemyApiKey,
-	projectId
+	chains = [baseGoerli, foundry],
+	projectId,
+	appName = 'swagmi'
 }: {
 	chains?: Chain[];
-	currentChain?: Chain;
-	rpc?: { http: string; webSocket?: string };
 	projectId?: string;
-	connectors?: Connector[];
-	infuraApiKey?: string;
-	alchemyApiKey?: string;
+	appName?: string;
 } = {}) {
 	if (mounted) return;
 	mounted = true;
+
 	wagmi.update((w) => {
 		w.loading = true;
-		w.currentChain = currentChain;
 		return w;
 	});
-	const { configureChains } = await import('@wagmi/core');
-	const providers: ChainProviderFn[] = [];
-	if (rpc) {
-		const { jsonRpcProvider } = await import('@wagmi/core/providers/jsonRpc');
-		providers.push(
-			jsonRpcProvider({
-				rpc: () => rpc
-			})
-		);
-	}
-	if (env.PUBLIC_WAGMI_RPC_URL?.length) {
-		const { jsonRpcProvider } = await import('@wagmi/core/providers/jsonRpc');
-		providers.push(
-			jsonRpcProvider({
-				rpc: () => ({
-					http: env.PUBLIC_WAGMI_RPC_URL,
-					webSocket: env.PUBLIC_WAGMI_RPC_WS_URL
-				})
-			})
-		);
-	}
-	if (infuraApiKey) {
-		const { infuraProvider } = await import('@wagmi/core/providers/infura');
-		providers.push(
-			infuraProvider({
-				apiKey: infuraApiKey
-			})
-		);
-	}
-	if (alchemyApiKey) {
-		const { alchemyProvider } = await import('@wagmi/core/providers/alchemy');
-		providers.push(
-			alchemyProvider({
-				apiKey: alchemyApiKey
-			})
-		);
-	}
-	const { publicProvider } = await import('@wagmi/core/providers/public');
-	providers.push(publicProvider());
 
-	const allChains = await import('@wagmi/core/chains');
-	const {
-		chains: clientChains,
-		provider,
-		webSocketProvider
-	} = await configureChains(chains || [allChains.baseGoerli, allChains.foundry], providers);
-
-	if (!connectors) {
-		const { CoinbaseWalletConnector } = await import('@wagmi/core/connectors/coinbaseWallet');
-		const { LedgerConnector } = await import('@wagmi/core/connectors/ledger');
-		const { MetaMaskConnector } = await import('@wagmi/core/connectors/metaMask');
-		const { SafeConnector } = await import('@wagmi/core/connectors/safe');
-
-		connectors = [
-			...w3mConnectors({
-				chains: clientChains,
-				projectId: projectId || env.PUBLIC_WALLETCONNECT_PROJECT_ID || '',
-				version: 2
-			}),
-			new CoinbaseWalletConnector({
-				options: {
-					appName: 'swagmi'
-				}
-			}),
-			new LedgerConnector(),
-			new MetaMaskConnector(),
-			new SafeConnector({
-				options: {
-					allowedDomains: env.PUBLIC_WAGMI_ALLOWED_DOMAINS?.length
-						? env.PUBLIC_WAGMI_ALLOWED_DOMAINS?.split(',').map((pattern) => new RegExp(pattern))
-						: [/localhost$/, /.*\.cinderlink\.com$/, /.*\.candor\.social$/]
-				}
-			})
-		];
+	// Setup transports for each chain
+	const transports: Record<number, ReturnType<typeof http>> = {};
+	for (const chain of chains) {
+		if (env.PUBLIC_WAGMI_RPC_URL && chain.id === baseGoerli.id) {
+			transports[chain.id] = http(env.PUBLIC_WAGMI_RPC_URL);
+		} else {
+			transports[chain.id] = http();
+		}
 	}
 
-	const client = createClient<Provider, WebSocketProvider>({
-		provider,
+	// Setup connectors
+	const connectors = [
+		injected(),
+		walletConnect({
+			projectId: projectId || env.PUBLIC_WALLETCONNECT_PROJECT_ID || ''
+		}),
+		coinbaseWallet({
+			appName
+		}),
+		safe({
+			allowedDomains: env.PUBLIC_WAGMI_ALLOWED_DOMAINS?.length
+				? env.PUBLIC_WAGMI_ALLOWED_DOMAINS.split(',').map((pattern) => new RegExp(pattern))
+				: [/localhost$/, /.*\.cinderlink\.com$/, /.*\.candor\.social$/]
+		})
+	];
+
+	const config = createConfig({
+		chains,
 		connectors,
-		webSocketProvider,
-		autoConnect: true
+		transports
 	});
 
 	wagmi.update((current) => ({
 		...current,
 		loading: false,
 		connected: true,
-		currentChain: currentChain || undefined,
-		chains: clientChains,
-		client
+		config,
+		chains
 	}));
+
+	return config;
 }
 
 export function disconnect() {
 	wagmi.update((w) => {
-		w.client?.destroy();
-		w.client = undefined;
+		w.config = undefined;
 		w.connected = false;
 		return w;
 	});

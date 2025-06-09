@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { BigNumber } from 'ethers';
+	// BigNumber import removed - using BigInt directly
 
 	import { openseaAsset } from '$lib/opensea/api';
 	import ContractRead from '$lib/contract/ContractRead.svelte';
@@ -20,13 +20,7 @@
 	<ContractRead method="totalSupply" args={[]} address={contract} {abi} let:result>
 		lastTokenId: {result}
 	</ContractRead>
-	<ContractRead
-		method="tokenURI"
-		args={[BigNumber.from(tokenId)]}
-		address={contract}
-		{abi}
-		let:result
-	>
+	<ContractRead method="tokenURI" args={[BigInt(tokenId)]} address={contract} {abi} let:result>
 		{#if result}
 			{#await fetch(result) then response}
 				{#await response.json() then nft}

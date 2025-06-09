@@ -1,38 +1,39 @@
 import { get, writable } from 'svelte/store';
 import {
-	fetchBalance,
-	fetchEnsAvatar,
-	fetchEnsName,
-	fetchSigner,
 	getAccount,
-	getNetwork,
+	getChainId,
+	getBalance,
+	getEnsName,
+	getEnsAvatar,
 	watchAccount,
-	watchNetwork,
-	watchSigner
+	watchChainId,
+	connect,
+	disconnect as wagmiDisconnect
 } from '@wagmi/core';
-import type * as ethers from 'ethers';
+import { formatEther } from 'viem';
 import wagmi from '$lib/wagmi/store';
 
 export interface WalletStore {
 	loading: boolean;
 	mounted: boolean;
 	connected: boolean;
+	connecting: boolean;
 	chainId?: number;
-	signer?: ethers.Signer;
 	address?: `0x${string}`;
 	displayName?: string;
 	avatar?: string;
 }
 
 export interface BalanceStore {
-	value?: ethers.BigNumberish;
+	value?: bigint;
 	formatted?: string;
 }
 
 export const wallet = writable<WalletStore>({
 	loading: false,
 	connected: false,
-	mounted: false
+	mounted: false,
+	connecting: false
 });
 export default wallet;
 
@@ -42,102 +43,78 @@ export let walletBalanceInterval: NodeJS.Timeout | undefined;
 export async function walletMount() {
 	const _wallet = get(wallet);
 	const _wagmi = get(wagmi);
-	if (!_wagmi.client) {
-		throw new Error('Called walletMount before wagmi client was ready');
+	if (!_wagmi.config) {
+		throw new Error('Called walletMount before wagmi config was ready');
 	}
 	if (_wallet.mounted || _wallet.loading) return () => undefined;
+
 	wallet.update((w) => {
 		w.loading = true;
 		return w;
 	});
 
-	const account = getAccount();
-	const signer = await fetchSigner();
-	const network = getNetwork();
+	// Get initial state
+	const account = getAccount(_wagmi.config);
+	const chainId = getChainId(_wagmi.config);
 
-	const currentNetwork = await getNetwork();
-	const currentAccount = await getAccount();
-	wagmi.update((w) => {
-		w.currentChain = currentNetwork.chain;
-		return w;
-	});
 	wallet.update((w) => {
-		w.address = currentAccount.address;
-		w.connected = !!signer;
-		w.signer = signer || undefined;
-		w.chainId = currentNetwork.chain?.id;
+		w.address = account.address;
+		w.connected = account.isConnected;
+		w.chainId = chainId;
 		w.mounted = true;
 		w.loading = false;
 		return w;
 	});
 
-	let unwatchSigner: (() => void) | undefined;
-	const unwatchNetwork = watchNetwork(async (network) => {
-		wagmi.update((w) => {
-			w.currentChain = network.chain;
-			return w;
-		});
-		wallet.update((w) => {
-			if (unwatchSigner) unwatchSigner();
-			w.chainId = network.chain?.id;
-			console.info('walletMount: network changed', network.chain?.id);
-			if (network.chain) {
-				fetchSigner().then((signer) => {
-					wallet.update((w) => {
-						w.connected = !!signer;
-						w.signer = signer || undefined;
-						return w;
-					});
-				});
-				unwatchSigner = watchSigner({ chainId: network.chain.id }, (signer) => {
-					console.info('walletMount: signer changed', !!signer);
-					wallet.update((w) => {
-						w.connected = !!signer;
-						w.signer = signer || undefined;
-						return w;
-					});
-				});
+	// Watch for account changes
+	const unwatchAccount = watchAccount(_wagmi.config, {
+		onChange: async (account) => {
+			wallet.update((w) => {
+				w.address = account.address;
+				w.connected = account.isConnected;
+				w.connecting = account.isConnecting;
+				console.info('walletMount: account changed', account.address, account.isConnected);
+				return w;
+			});
+
+			if (account.address && account.isConnected) {
+				await fetchAccountDetails();
 			}
-			return w;
-		});
+		}
 	});
 
-	const unwatch = watchAccount(async (account) => {
-		const { address, isConnected } = account;
-		wallet.update((w) => {
-			w.address = address;
-			w.connected = w.connected && isConnected;
-			console.info('walletMount: account changed', address, isConnected);
-			return w;
-		});
-
-		await fetchAccountDetails();
+	// Watch for chain changes
+	const unwatchChainId = watchChainId(_wagmi.config, {
+		onChange: (chainId) => {
+			wallet.update((w) => {
+				w.chainId = chainId;
+				console.info('walletMount: chain changed', chainId);
+				return w;
+			});
+		}
 	});
 
+	// Setup balance polling
 	walletBalanceInterval = setInterval(async () => {
 		const { address, chainId } = get(wallet);
-		if (address) {
-			const balance = await fetchBalance({ address, chainId });
-			if (balance) {
+		const { config } = get(wagmi);
+		if (address && config) {
+			try {
+				const balance = await getBalance(config, { address, chainId });
 				walletBalance.update((w) => {
 					w.value = balance.value;
-					w.formatted = balance.formatted;
+					w.formatted = formatEther(balance.value);
 					return w;
 				});
+			} catch (error) {
+				console.warn('Failed to fetch balance:', error);
 			}
 		}
 	}, 5000);
 
-	if (account) {
-		wallet.update((w) => {
-			w.mounted = true;
-			w.loading = !account.isConnected;
-			w.connected = account.isConnected && !!signer;
-			w.address = account.address;
-			w.chainId = network.chain?.id;
-			fetchAccountDetails();
-			return w;
-		});
+	// Initial fetch if already connected
+	if (account.address && account.isConnected) {
+		await fetchAccountDetails();
 	}
 
 	return () => {
@@ -145,9 +122,8 @@ export async function walletMount() {
 			w.mounted = false;
 			return w;
 		});
-		unwatch();
-		unwatchNetwork();
-		unwatchSigner?.();
+		unwatchAccount();
+		unwatchChainId();
 		if (walletBalanceInterval) {
 			clearInterval(walletBalanceInterval);
 		}
@@ -156,29 +132,75 @@ export async function walletMount() {
 
 export async function fetchAccountDetails() {
 	const { address, connected } = get(wallet);
-	if (address && connected) {
-		const displayName = await fetchEnsName({ address });
-		if (displayName) {
-			wallet.update((w) => {
-				w.displayName = displayName;
-				return w;
-			});
+	const { config } = get(wagmi);
+	if (address && connected && config) {
+		try {
+			const displayName = await getEnsName(config, { address });
+			if (displayName) {
+				wallet.update((w) => {
+					w.displayName = displayName;
+					return w;
+				});
+			}
+		} catch (error) {
+			console.warn('Failed to fetch ENS name:', error);
 		}
-		const avatar = await fetchEnsAvatar({ address });
-		if (avatar) {
-			wallet.update((w) => {
-				w.avatar = avatar;
-				return w;
-			});
+
+		try {
+			const avatar = await getEnsAvatar(config, { name: address });
+			if (avatar) {
+				wallet.update((w) => {
+					w.avatar = avatar;
+					return w;
+				});
+			}
+		} catch (error) {
+			console.warn('Failed to fetch ENS avatar:', error);
 		}
 	}
 }
 
-export function disconnectWallet() {
+export async function connectWallet(connectorId?: string) {
+	const { config } = get(wagmi);
+	if (!config) return;
+
+	wallet.update((w) => {
+		w.connecting = true;
+		return w;
+	});
+
+	try {
+		const connector = connectorId
+			? config.connectors.find((c) => c.id === connectorId)
+			: config.connectors[0];
+
+		if (connector) {
+			await connect(config, { connector });
+		}
+	} catch (error) {
+		console.error('Failed to connect wallet:', error);
+	} finally {
+		wallet.update((w) => {
+			w.connecting = false;
+			return w;
+		});
+	}
+}
+
+export async function disconnectWallet() {
+	const { config } = get(wagmi);
+	if (!config) return;
+
+	try {
+		await wagmiDisconnect(config);
+	} catch (error) {
+		console.error('Failed to disconnect wallet:', error);
+	}
+
 	wallet.update((w) => {
 		w.loading = false;
 		w.connected = false;
-		w.mounted = false;
+		w.connecting = false;
 		w.displayName = undefined;
 		w.avatar = undefined;
 		w.address = undefined;

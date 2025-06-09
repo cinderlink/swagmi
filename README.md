@@ -46,3 +46,4 @@ pnpm add swagmi ethers@^5
         </Wallet>
     {/if}
 </Wagmi>
+```
