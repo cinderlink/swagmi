@@ -2,8 +2,10 @@
 	import { Panel, LoadingIndicator } from '@cinderlink/ui-kit';
 	import { formatGwei } from 'viem';
 
-	export let explorerUrl: string | undefined = undefined;
-	export let receipt: any = undefined;
+	let { explorerUrl = undefined, receipt = undefined }: {
+		explorerUrl?: string;
+		receipt?: any;
+	} = $props();
 </script>
 
 {#if receipt}
@@ -29,7 +31,7 @@
 					target="_blank"
 					rel="noopener noreferrer"
 				>
-					<div class="i-tabler-map" />
+					<div class="i-tabler-map"></div>
 					{receipt.transactionHash}
 				</a>
 			</div>

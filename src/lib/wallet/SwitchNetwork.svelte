@@ -1,13 +1,15 @@
 <script lang="ts">
 	import { Button, LoadingIndicator } from '@cinderlink/ui-kit';
 	import { switchChain } from '@wagmi/core';
-	import wagmi from '$lib/wagmi/store';
-	import wallet from '$lib/wallet/store';
+	import wagmi from '$lib/wagmi/store.svelte';
+	import wallet from '$lib/wallet/store.svelte';
 
-	export let chainId: number;
+	let { chainId }: {
+		chainId: number;
+	} = $props();
 
 	async function run() {
-		const { config } = $wagmi;
+		const { config } = wagmi;
 		if (!config) {
 			error = new Error('Wagmi config not available');
 			return;
@@ -32,12 +34,12 @@
 	<slot name="loading">
 		<LoadingIndicator>Switching network...</LoadingIndicator>
 	</slot>
-{:else if $wallet.chainId === chainId}
+{:else if wallet.chainId === chainId}
 	<slot />
 {:else}
 	<slot name="switch" {run} {error}>
 		<div class="flex flex-col items-center justify-center gap-4 p-2">
-			<div class="i-tabler-warning" />
+			<div class="i-tabler-warning"></div>
 			<h1 class="text-2xl font-bold">Wrong Network</h1>
 			<p class="text-gray-500">
 				<slot name="message">

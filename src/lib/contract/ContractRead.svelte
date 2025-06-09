@@ -1,22 +1,24 @@
 <script lang="ts">
 	import { readContract } from '@wagmi/core';
 	import { onMount } from 'svelte';
-	import wagmi from '$lib/wagmi/store';
+	import wagmi from '$lib/wagmi/store.svelte';
 	import type { Abi, Address } from 'viem';
 
-	export let address: Address;
-	export let abi: Abi;
-	export let functionName: string;
-	export let args: readonly unknown[] = [];
-	export let interval: number | undefined = undefined;
+	let { address, abi, functionName, args = [], interval = undefined }: {
+		address: Address;
+		abi: Abi;
+		functionName: string;
+		args?: readonly unknown[];
+		interval?: number;
+	} = $props();
 
-	let loading = true;
-	let result: unknown;
-	let error: Error | undefined = undefined;
+	let loading = $state(true);
+	let result: unknown = $state();
+	let error: Error | undefined = $state();
 	let _interval: ReturnType<typeof setInterval>;
 
 	async function fetchValue() {
-		const { config } = $wagmi;
+		const { config } = wagmi;
 		if (!config) return;
 
 		try {
@@ -50,9 +52,11 @@
 	});
 
 	// Reactive updates when dependencies change
-	$: if ($wagmi.config) {
-		fetchValue();
-	}
+	$effect(() => {
+		if (wagmi.config) {
+			fetchValue();
+		}
+	});
 </script>
 
 <slot {loading} {result} {error} />

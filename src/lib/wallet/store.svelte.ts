@@ -1,4 +1,3 @@
-import { get, writable } from 'svelte/store';
 import {
 	getAccount,
 	getChainId,
@@ -11,7 +10,7 @@ import {
 	disconnect as wagmiDisconnect
 } from '@wagmi/core';
 import { formatEther } from 'viem';
-import wagmi from '$lib/wagmi/store';
+import { wagmi } from '$lib/wagmi/store.svelte';
 
 export interface WalletStore {
 	loading: boolean;
@@ -29,20 +28,83 @@ export interface BalanceStore {
 	formatted?: string;
 }
 
-export const wallet = writable<WalletStore>({
-	loading: false,
-	connected: false,
-	mounted: false,
-	connecting: false
-});
-export default wallet;
+class WalletState {
+	state = $state<WalletStore>({
+		loading: false,
+		connected: false,
+		mounted: false,
+		connecting: false
+	});
+	
+	get loading() {
+		return this.state.loading;
+	}
+	
+	get mounted() {
+		return this.state.mounted;
+	}
+	
+	get connected() {
+		return this.state.connected;
+	}
+	
+	get connecting() {
+		return this.state.connecting;
+	}
+	
+	get chainId() {
+		return this.state.chainId;
+	}
+	
+	get address() {
+		return this.state.address;
+	}
+	
+	get displayName() {
+		return this.state.displayName;
+	}
+	
+	get avatar() {
+		return this.state.avatar;
+	}
+	
+	update(updater: (current: WalletStore) => WalletStore) {
+		this.state = updater(this.state);
+	}
+	
+	set(newState: WalletStore) {
+		this.state = newState;
+	}
+}
 
-export const walletBalance = writable<BalanceStore>({});
+class WalletBalanceState {
+	state = $state<BalanceStore>({});
+	
+	get value() {
+		return this.state.value;
+	}
+	
+	get formatted() {
+		return this.state.formatted;
+	}
+	
+	update(updater: (current: BalanceStore) => BalanceStore) {
+		this.state = updater(this.state);
+	}
+	
+	set(newState: BalanceStore) {
+		this.state = newState;
+	}
+}
+
+export const wallet = new WalletState();
+export const walletBalance = new WalletBalanceState();
 
 export let walletBalanceInterval: NodeJS.Timeout | undefined;
+
 export async function walletMount() {
-	const _wallet = get(wallet);
-	const _wagmi = get(wagmi);
+	const _wallet = wallet.state;
+	const _wagmi = wagmi.state;
 	if (!_wagmi.config) {
 		throw new Error('Called walletMount before wagmi config was ready');
 	}
@@ -96,8 +158,8 @@ export async function walletMount() {
 
 	// Setup balance polling
 	walletBalanceInterval = setInterval(async () => {
-		const { address, chainId } = get(wallet);
-		const { config } = get(wagmi);
+		const { address, chainId } = wallet.state;
+		const { config } = wagmi.state;
 		if (address && config) {
 			try {
 				const balance = await getBalance(config, { address, chainId });
@@ -131,8 +193,8 @@ export async function walletMount() {
 }
 
 export async function fetchAccountDetails() {
-	const { address, connected } = get(wallet);
-	const { config } = get(wagmi);
+	const { address, connected } = wallet.state;
+	const { config } = wagmi.state;
 	if (address && connected && config) {
 		try {
 			const displayName = await getEnsName(config, { address });
@@ -161,7 +223,7 @@ export async function fetchAccountDetails() {
 }
 
 export async function connectWallet(connectorId?: string) {
-	const { config } = get(wagmi);
+	const { config } = wagmi.state;
 	if (!config) return;
 
 	wallet.update((w) => {
@@ -188,7 +250,7 @@ export async function connectWallet(connectorId?: string) {
 }
 
 export async function disconnectWallet() {
-	const { config } = get(wagmi);
+	const { config } = wagmi.state;
 	if (!config) return;
 
 	try {
@@ -213,3 +275,5 @@ export async function disconnectWallet() {
 		return w;
 	});
 }
+
+export default wallet;

@@ -1,7 +1,6 @@
 import { createConfig, http, type Config } from '@wagmi/core';
-import { writable } from 'svelte/store';
 import { coinbaseWallet, injected, walletConnect, safe } from '@wagmi/connectors';
-import { mainnet, base, baseGoerli, foundry } from '@wagmi/core/chains';
+import { baseGoerli, foundry } from '@wagmi/core/chains';
 import type { Chain } from '@wagmi/core/chains';
 
 import { env } from '$env/dynamic/public';
@@ -13,13 +12,39 @@ export interface WagmiStore {
 	chains: Chain[];
 }
 
-export const wagmi = writable<WagmiStore>({
-	loading: false,
-	connected: false,
-	chains: []
-});
+class WagmiState {
+	state = $state<WagmiStore>({
+		loading: false,
+		connected: false,
+		chains: []
+	});
+	
+	get loading() {
+		return this.state.loading;
+	}
+	
+	get connected() {
+		return this.state.connected;
+	}
+	
+	get config() {
+		return this.state.config;
+	}
+	
+	get chains() {
+		return this.state.chains;
+	}
+	
+	update(updater: (current: WagmiStore) => WagmiStore) {
+		this.state = updater(this.state);
+	}
+	
+	set(newState: WagmiStore) {
+		this.state = newState;
+	}
+}
 
-export default wagmi;
+export const wagmi = new WagmiState();
 
 let mounted = false;
 export async function load({
@@ -89,3 +114,5 @@ export function disconnect() {
 		return w;
 	});
 }
+
+export default wagmi;

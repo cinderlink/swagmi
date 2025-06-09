@@ -2,7 +2,7 @@
 	import { parseEther } from 'viem';
 	import { Typography, Syntax, LoadingIndicator, Button } from '@cinderlink/ui-kit';
 	import CandorEarlyAccess from '$lib/contracts/84531/contracts/CandorEarlyAccess';
-	import { wallet } from '$lib/wallet/store';
+	import { wallet } from '$lib/wallet/store.svelte';
 	import Wagmi from '$lib/wagmi/Wagmi.svelte';
 	import ContractWrite from '$lib/contract/ContractWrite.svelte';
 	import ConnectButton from '$lib/wallet/ConnectButton.svelte';
@@ -21,10 +21,10 @@
 </script>
 
 <Wagmi let:connected let:client>
-    {#if connected && $wallet.address}
+    {#if connected && wallet.address}
         <ContractWrite
             method="mint"
-            args={[$wallet.address]}
+            args={[wallet.address]}
             value="0.01"
             address={CandorEarlyAccess.address}
             abi={CandorEarlyAccess.abi}
@@ -50,10 +50,10 @@
 <section class="mt-4">
 	<Typography el="h4">Output</Typography>
 	<Wagmi let:connected let:client>
-		{#if connected && $wallet.address}
+		{#if connected && wallet.address}
 			<ContractWrite
 				method="mint"
-				args={[$wallet.address]}
+				args={[wallet.address]}
 				value={parseEther('0.01')}
 				address={CandorEarlyAccess.address}
 				abi={CandorEarlyAccess.abi}

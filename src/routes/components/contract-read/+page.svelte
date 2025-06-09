@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { Typography, Syntax, LoadingIndicator } from '@cinderlink/ui-kit';
 	import CandorEarlyAccess from '$lib/contracts/84531/contracts/CandorEarlyAccess';
-	import { wallet } from '$lib/wallet/store';
+	import { wallet } from '$lib/wallet/store.svelte';
 	import Wagmi from '$lib/wagmi/Wagmi.svelte';
 	import ContractRead from '$lib/contract/ContractRead.svelte';
 	import ConnectButton from '$lib/wallet/ConnectButton.svelte';
@@ -19,10 +19,10 @@
 </script>
 
 <Wagmi let:connected let:client>
-    {#if connected && $wallet.address}
+    {#if connected && wallet.address}
         <ContractRead
             method="balanceOf"
-            args={[$wallet.address]}
+            args={[wallet.address]}
             address={CandorEarlyAccess.address}
             abi={CandorEarlyAccess.abi}
             let:result
@@ -42,10 +42,10 @@
 <section class="mt-4">
 	<Typography el="h4">Output</Typography>
 	<Wagmi let:connected let:client>
-		{#if connected && $wallet.address}
+		{#if connected && wallet.address}
 			<ContractRead
 				method="balanceOf"
-				args={[$wallet.address]}
+				args={[wallet.address]}
 				address={CandorEarlyAccess.address}
 				abi={CandorEarlyAccess.abi}
 				let:result

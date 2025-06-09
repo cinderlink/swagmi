@@ -40,7 +40,7 @@
 						{#if nft}
 							<img src={nft.image_url} alt={nft.name} />
 						{:else}
-							<div class="i-tabler-not-found" />
+							<div class="i-tabler-not-found"></div>
 						{/if}
 					</Nft>
 				</ConnectModal>
@@ -58,13 +58,13 @@
 						{#if nft}
 							<img src={nft.image_url} alt={nft.name} />
 						{:else}
-							<div class="i-tabler-not-found" />
+							<div class="i-tabler-not-found"></div>
 						{/if}
 					</Nft>
 				</ConnectModal>
 			</div>
 		{:else}
-			<div class="i-tabler-loader animate-spin text-2xl" />
+			<div class="i-tabler-loader animate-spin text-2xl"></div>
 		{/if}
 	</Wagmi>
 </section>
