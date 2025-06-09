@@ -1,20 +1,17 @@
 <script lang="ts">
 	import { Panel, LoadingIndicator } from '@cinderlink/ui-kit';
-	import { waitForTransaction } from '@wagmi/core';
-	import type { ContractReceipt, Transaction } from 'ethers';
+	import { waitForTransactionReceipt } from '@wagmi/core';
+	import wagmi from '$lib/wagmi/store';
+	import wallet from '$lib/wallet/store';
+	import type { Hash } from 'viem';
 	import Receipt from './Receipt.svelte';
 
 	export let explorerUrl: string | undefined = undefined;
-	export let tx: Transaction | undefined = undefined;
-	export let receipt: ContractReceipt | undefined = undefined;
+	export let receipt: any = undefined;
 	export let confirmations = 12;
-	export let hash: `0x${string}` | undefined = undefined;
-	export let chainId = 1;
+	export let hash: Hash | undefined = undefined;
 
-	$: if (tx) {
-		chainId = tx.chainId as number;
-		hash = tx.hash as `0x${string}`;
-	}
+	$: chainId = $wallet.chainId || 1;
 </script>
 
 <Panel variant="offset" size="xs">
@@ -30,15 +27,15 @@
 		</div>
 	{/if}
 	{#if receipt}
-		<Receipt {receipt} />
-	{:else if hash && chainId}
-		{#await waitForTransaction({ chainId: chainId, hash, confirmations })}
+		<Receipt {receipt} {explorerUrl} />
+	{:else if hash && $wagmi.config}
+		{#await waitForTransactionReceipt($wagmi.config, { hash, confirmations })}
 			<LoadingIndicator>
 				Transaction submitted. Waiting for {confirmations} confirmations.
 				{#if hash}({hash}){/if}
 			</LoadingIndicator>
-		{:then receipt}
-			<Receipt {receipt} />
+		{:then transactionReceipt}
+			<Receipt receipt={transactionReceipt} {explorerUrl} />
 		{/await}
 	{/if}
 </Panel>

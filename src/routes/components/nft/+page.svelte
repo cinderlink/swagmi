@@ -1,14 +1,12 @@
 <script lang="ts">
+	/* eslint-disable @typescript-eslint/no-unused-vars */
 	import CandorEarlyAccess from '$lib/contracts/84531/contracts/CandorEarlyAccess';
 
 	import Nft from '$lib/nft/NFT.svelte';
 
-	import { Typography, Button, Syntax } from '@cinderlink/ui-kit';
+	import { Typography, Syntax } from '@cinderlink/ui-kit';
 	import Wagmi from '$lib/wagmi/Wagmi.svelte';
-	import Wallet from '$lib/wallet/Wallet.svelte';
 	import ConnectModal from '$lib/wallet/ConnectModal.svelte';
-	import ConnectButton from '$lib/wallet/ConnectButton.svelte';
-	import DisconnectButton from '$lib/wallet/DisconnectButton.svelte';
 </script>
 
 <Typography>&lt;NFT /&gt;</Typography>

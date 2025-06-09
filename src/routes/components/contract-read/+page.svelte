@@ -15,7 +15,7 @@
 	<Syntax
 		language="svelte"
 		code={`<script>
-    import { Contract } from "swagmi";
+    import { ContractRead } from "swagmi";
 </script>
 
 <Wagmi let:connected let:client>

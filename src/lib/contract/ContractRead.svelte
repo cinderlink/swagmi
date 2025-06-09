@@ -1,28 +1,41 @@
 <script lang="ts">
-	import { LoadingIndicator } from '@cinderlink/ui-kit';
-	import { fetchSigner } from '@wagmi/core';
-	import { getProvider } from '@wagmi/core';
-	import { getContract } from '@wagmi/core';
-	import type { Contract } from 'ethers';
+	import { readContract } from '@wagmi/core';
 	import { onMount } from 'svelte';
+	import wagmi from '$lib/wagmi/store';
+	import type { Abi, Address } from 'viem';
 
-	export let address: string;
-	export let abi: any;
-	export let method: string;
-	export let args: any[];
+	export let address: Address;
+	export let abi: Abi;
+	export let functionName: string;
+	export let args: readonly unknown[] = [];
 	export let interval: number | undefined = undefined;
 
 	let loading = true;
-	let contract: Contract;
 	let result: unknown;
-	let _interval: NodeJS.Timer;
+	let error: Error | undefined = undefined;
+	let _interval: ReturnType<typeof setInterval>;
+
+	async function fetchValue() {
+		const { config } = $wagmi;
+		if (!config) return;
+
+		try {
+			error = undefined;
+			result = await readContract(config, {
+				address,
+				abi,
+				functionName,
+				args
+			});
+			loading = false;
+		} catch (err) {
+			error = err as Error;
+			loading = false;
+			console.error('Contract read error:', err);
+		}
+	}
+
 	onMount(async () => {
-		const signerOrProvider = (await fetchSigner()) || getProvider();
-		contract = getContract({
-			address,
-			abi,
-			signerOrProvider
-		});
 		await fetchValue();
 
 		if (interval) {
@@ -36,10 +49,10 @@
 		};
 	});
 
-	async function fetchValue() {
-		result = await contract?.[method](...args);
-		loading = false;
+	// Reactive updates when dependencies change
+	$: if ($wagmi.config) {
+		fetchValue();
 	}
 </script>
 
-<slot {loading} {result} />
+<slot {loading} {result} {error} />

@@ -1,22 +1,22 @@
 <script lang="ts">
 	import { Panel, LoadingIndicator } from '@cinderlink/ui-kit';
+	import { formatGwei } from 'viem';
+
 	export let explorerUrl: string | undefined = undefined;
-	import type { ContractReceipt } from 'ethers';
-	import * as ethers from 'ethers';
-	export let receipt: ContractReceipt | undefined = undefined;
+	export let receipt: any = undefined;
 </script>
 
 {#if receipt}
 	<Panel>
 		<div class="details">
 			<div class="variable">Status</div>
-			<div class="value">{receipt.status ? 'Success' : 'Failed'}</div>
-			<div class="variable">Confirmations</div>
-			<div class="value">{receipt.confirmations}</div>
+			<div class="value">{receipt.status === 'success' ? 'Success' : 'Failed'}</div>
 			<div class="variable">Gas Used</div>
-			<div class="value">{ethers.utils.formatUnits(receipt.gasUsed)}</div>
+			<div class="value">{receipt.gasUsed ? formatGwei(receipt.gasUsed) : 'N/A'}</div>
 			<div class="variable">Cumulative Gas Used</div>
-			<div class="value">{ethers.utils.formatUnits(receipt.cumulativeGasUsed)}</div>
+			<div class="value">
+				{receipt.cumulativeGasUsed ? formatGwei(receipt.cumulativeGasUsed) : 'N/A'}
+			</div>
 			<div class="variable">Block Hash</div>
 			<div class="value">{receipt.blockHash}</div>
 			<div class="variable">Block Number</div>

@@ -1,13 +1,13 @@
 <script lang="ts">
-	import { BigNumber, type ContractReceipt } from 'ethers';
+	import type { TransactionReceipt, Log } from 'viem';
 	import Transaction from '$lib/transaction/Transaction.svelte';
 	import { Typography } from '@cinderlink/ui-kit';
-	const receipt: ContractReceipt = {
+	const receipt: TransactionReceipt = {
 		to: '0x59b670e9fA9D0A427751Af201D676719a970857b',
 		from: '0x70997970C51812dc3A010C7d01b50e0d17dc79C8',
 		contractAddress: '0x59b670e9fA9D0A427751Af201D676719a970857b',
 		transactionIndex: 0,
-		gasUsed: BigNumber.from('0x0260e0'),
+		gasUsed: BigInt('0x0260e0'),
 		logsBloom:
 			'0x04000000000000000002000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000008000000000000000008000000000000000000000000000800020000000000000000000800000000000000000000000010000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000100000000080000000000000000000000000000000000000002000000000000000000020000000000000000000000000000000020000000000000000000000000000000000001000000008000000000000000000000',
 		blockHash: '0xe21ff3e94379e95209e5e20490d772d9a9c32891dbb6b78de84b9f9a86e7b62a',
@@ -27,12 +27,12 @@
 				data: '0x',
 				logIndex: 0,
 				blockHash: '0xe21ff3e94379e95209e5e20490d772d9a9c32891dbb6b78de84b9f9a86e7b62a'
-			} as any
+			} as Log
 		],
 		blockNumber: 1979,
 		confirmations: 4,
-		cumulativeGasUsed: BigNumber.from('0x0260e0'),
-		effectiveGasPrice: BigNumber.from('0x00'),
+		cumulativeGasUsed: BigInt('0x0260e0'),
+		effectiveGasPrice: BigInt('0x00'),
 		status: 1,
 		type: 2,
 		byzantium: true,
@@ -54,14 +54,11 @@
 				args: [
 					'0x0000000000000000000000000000000000000000',
 					'0x70997970C51812dc3A010C7d01b50e0d17dc79C8',
-					{
-						type: 'BigNumber',
-						hex: '0x02'
-					}
+					BigInt('0x02')
 				],
 				event: 'Transfer',
 				eventSignature: 'Transfer(address,address,uint256)'
-			} as any
+			} as any // Event type from viem
 		]
 	};
 </script>
