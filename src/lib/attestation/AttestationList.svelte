@@ -1,11 +1,14 @@
 <script lang="ts">
 	import type { Log } from 'viem';
 
-	let { address, contract }: {
+	let {
+		address,
+		contract
+	}: {
 		address: string;
 		contract: any; // Contract interface from wagmi/viem
 	} = $props();
-	
+
 	export const map: Record<
 		string,
 		{

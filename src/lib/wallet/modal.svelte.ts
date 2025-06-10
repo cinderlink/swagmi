@@ -1,36 +1,36 @@
 interface ModalStore {
-  isOpen: boolean;
+	isOpen: boolean;
 }
 
 class ModalState {
-  state = $state<ModalStore>({
-    isOpen: false
-  });
+	state = $state<ModalStore>({
+		isOpen: false
+	});
 
-  get isOpen() {
-    return this.state.isOpen;
-  }
+	get isOpen() {
+		return this.state.isOpen;
+	}
 
-  show() {
-    this.state.isOpen = true;
-  }
+	show() {
+		this.state.isOpen = true;
+	}
 
-  hide() {
-    this.state.isOpen = false;
-  }
+	hide() {
+		this.state.isOpen = false;
+	}
 
-  toggle() {
-    this.state.isOpen = !this.state.isOpen;
-  }
+	toggle() {
+		this.state.isOpen = !this.state.isOpen;
+	}
 }
 
 export const modal = new ModalState();
 
 // Legacy functions for backwards compatibility
 export function showModal() {
-  modal.show();
+	modal.show();
 }
 
 export function hideModal() {
-  modal.hide();
+	modal.hide();
 }

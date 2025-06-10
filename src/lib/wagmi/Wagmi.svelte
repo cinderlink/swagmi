@@ -5,12 +5,12 @@
 	import type { Chain } from '@wagmi/core/chains';
 	setContext('wagmi', wagmi);
 
-	let { 
-		chains = [], 
-		projectId = env.PUBLIC_WALLETCONNECT_PROJECT_ID || '', 
+	let {
+		chains = [],
+		projectId = env.PUBLIC_WALLETCONNECT_PROJECT_ID || '',
 		appName = 'swagmi',
 		children,
-		loading 
+		loading
 	}: {
 		chains?: Chain[];
 		projectId?: string;

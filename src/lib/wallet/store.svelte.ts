@@ -35,43 +35,43 @@ class WalletState {
 		mounted: false,
 		connecting: false
 	});
-	
+
 	get loading() {
 		return this.state.loading;
 	}
-	
+
 	get mounted() {
 		return this.state.mounted;
 	}
-	
+
 	get connected() {
 		return this.state.connected;
 	}
-	
+
 	get connecting() {
 		return this.state.connecting;
 	}
-	
+
 	get chainId() {
 		return this.state.chainId;
 	}
-	
+
 	get address() {
 		return this.state.address;
 	}
-	
+
 	get displayName() {
 		return this.state.displayName;
 	}
-	
+
 	get avatar() {
 		return this.state.avatar;
 	}
-	
+
 	update(updater: (current: WalletStore) => WalletStore) {
 		this.state = updater(this.state);
 	}
-	
+
 	set(newState: WalletStore) {
 		this.state = newState;
 	}
@@ -79,19 +79,19 @@ class WalletState {
 
 class WalletBalanceState {
 	state = $state<BalanceStore>({});
-	
+
 	get value() {
 		return this.state.value;
 	}
-	
+
 	get formatted() {
 		return this.state.formatted;
 	}
-	
+
 	update(updater: (current: BalanceStore) => BalanceStore) {
 		this.state = updater(this.state);
 	}
-	
+
 	set(newState: BalanceStore) {
 		this.state = newState;
 	}

@@ -5,13 +5,13 @@
 	import ContractRead from '$lib/contract/ContractRead.svelte';
 	import type { Snippet } from 'svelte';
 
-	let { 
-		contract, 
-		abi, 
-		tokenId, 
+	let {
+		contract,
+		abi,
+		tokenId,
 		source = 'opensea',
 		children,
-		error: errorSnippet 
+		error: errorSnippet
 	}: {
 		contract: string;
 		abi: string;
@@ -47,7 +47,7 @@
 					{@render errorSnippet?.({ error: fetchError })}
 				{/await}
 			{:else}
-				{@render errorSnippet?.({ error: "Failed to fetch tokenUri" })}
+				{@render errorSnippet?.({ error: 'Failed to fetch tokenUri' })}
 			{/if}
 		{/snippet}
 	</ContractRead>

@@ -2,7 +2,10 @@
 	import { Panel, LoadingIndicator } from '@cinderlink/ui-kit';
 	import { formatGwei } from 'viem';
 
-	let { explorerUrl = undefined, receipt = undefined }: {
+	let {
+		explorerUrl = undefined,
+		receipt = undefined
+	}: {
 		explorerUrl?: string;
 		receipt?: any;
 	} = $props();

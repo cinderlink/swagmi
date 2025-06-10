@@ -7,5 +7,5 @@
 </script>
 
 <Wagmi>
-	<slot wallet={wallet} />
+	<slot {wallet} />
 </Wagmi>
