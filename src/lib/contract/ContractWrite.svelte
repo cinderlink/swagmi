@@ -6,7 +6,7 @@
 	import wagmi from '$lib/wagmi/store.svelte';
 	import type { Abi, Address, Hash } from 'viem';
 	import type { Writable } from 'svelte/store';
-	import { createEventDispatcher } from 'svelte';
+	import { createEventDispatcher, type Snippet } from 'svelte';
 
 	let {
 		abi,
@@ -16,7 +16,13 @@
 		args = [],
 		value = undefined,
 		receipt = undefined,
-		hash = undefined
+		hash = undefined,
+		children,
+		error: errorSnippet,
+		pending,
+		receiptSnippet,
+		submitting: submittingSnippet,
+		idle
 	}: {
 		abi: Abi;
 		address: Address;
@@ -26,6 +32,12 @@
 		value?: bigint;
 		receipt?: any;
 		hash?: Hash;
+		children?: Snippet<[{ run: (...args: unknown[]) => Promise<void>; receipt: any; hash: Hash | undefined; submitting: boolean }]>;
+		error?: Snippet<[{ error: Error }]>;
+		pending?: Snippet<[{ hash: Hash }]>;
+		receiptSnippet?: Snippet<[{ receipt: any }]>;
+		submitting?: Snippet;
+		idle?: Snippet<[{ contract: any; run: (...args: unknown[]) => Promise<void> }]>;
 	} = $props();
 
 	const dispatch = createEventDispatcher();
@@ -69,24 +81,35 @@
 </script>
 
 <Contract bind:contract {address} {abi}>
-	<slot {run} {receipt} {hash} {submitting} />
-	{#if error}
-		<slot {error} name="error">
-			<p class="text-red-500">Error: {error.message}</p>
-		</slot>
-	{:else if hash && !receipt}
-		<slot {hash} name="pending">
-			<Transaction {hash} />
-		</slot>
-	{:else if receipt}
-		<slot {receipt} name="receipt">
-			<Transaction {hash} {receipt} />
-		</slot>
-	{:else if submitting}
-		<slot name="submitting">
-			<LoadingIndicator>Submitting transaction...</LoadingIndicator>
-		</slot>
-	{:else}
-		<slot name="idle" contract={$contract} {run} />
-	{/if}
+	{#snippet children(contractInstance)}
+		{@render children?.({ run, receipt, hash, submitting })}
+		
+		{#if error}
+			{#if errorSnippet}
+				{@render errorSnippet({ error })}
+			{:else}
+				<p class="text-red-500">Error: {error.message}</p>
+			{/if}
+		{:else if hash && !receipt}
+			{#if pending}
+				{@render pending({ hash })}
+			{:else}
+				<Transaction {hash} />
+			{/if}
+		{:else if receipt}
+			{#if receiptSnippet}
+				{@render receiptSnippet({ receipt })}
+			{:else}
+				<Transaction {hash} {receipt} />
+			{/if}
+		{:else if submitting}
+			{#if submittingSnippet}
+				{@render submittingSnippet()}
+			{:else}
+				<LoadingIndicator>Submitting transaction...</LoadingIndicator>
+			{/if}
+		{:else if idle}
+			{@render idle({ contract: contractInstance, run })}
+		{/if}
+	{/snippet}
 </Contract>

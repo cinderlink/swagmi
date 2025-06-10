@@ -1,17 +1,25 @@
 <script lang="ts">
 	import { getContract } from 'viem';
 	import { getWalletClient, getPublicClient } from '@wagmi/core';
-	import { setContext } from 'svelte';
+	import { setContext, type Snippet } from 'svelte';
 	import { writable, type Writable } from 'svelte/store';
 	import wallet from '$lib/wallet/store.svelte';
 	import wagmi from '$lib/wagmi/store.svelte';
 	import { LoadingIndicator } from '@cinderlink/ui-kit';
 	import type { Abi, Address } from 'viem';
 
-	let { address, abi, contract = writable(undefined) }: {
+	let { 
+		address, 
+		abi, 
+		contract = writable(undefined),
+		children,
+		loading 
+	}: {
 		address: Address;
 		abi: Abi;
 		contract?: Writable<any>;
+		children?: Snippet<[any]>;
+		loading?: Snippet;
 	} = $props();
 	setContext('contract', contract);
 
@@ -41,9 +49,11 @@
 </script>
 
 {#if $contract}
-	<slot contract={$contract} />
+	{@render children?.($contract)}
 {:else}
-	<slot name="loading">
+	{#if loading}
+		{@render loading()}
+	{:else}
 		<LoadingIndicator>Loading contract...</LoadingIndicator>
-	</slot>
+	{/if}
 {/if}

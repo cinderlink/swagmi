@@ -3,38 +3,52 @@
 
 	import { openseaAsset } from '$lib/opensea/api';
 	import ContractRead from '$lib/contract/ContractRead.svelte';
+	import type { Snippet } from 'svelte';
 
-	let { contract, abi, tokenId, source = 'opensea' }: {
+	let { 
+		contract, 
+		abi, 
+		tokenId, 
+		source = 'opensea',
+		children,
+		error: errorSnippet 
+	}: {
 		contract: string;
 		abi: string;
 		tokenId: string;
 		source?: 'opensea' | 'contract';
+		children?: Snippet<[{ nft: any }]>;
+		error?: Snippet<[{ error: any }]>;
 	} = $props();
 </script>
 
 {#if source === 'opensea'}
 	{#await openseaAsset(contract, tokenId) then nft}
-		<slot {nft} />
+		{@render children?.({ nft })}
 	{:catch error}
-		<slot {error} />
+		{@render errorSnippet?.({ error })}
 	{/await}
 {:else if source === 'contract'}
-	<ContractRead method="totalSupply" args={[]} address={contract} {abi} let:result>
-		lastTokenId: {result}
+	<ContractRead functionName="totalSupply" args={[]} address={contract} {abi}>
+		{#snippet children({ result })}
+			lastTokenId: {result}
+		{/snippet}
 	</ContractRead>
-	<ContractRead method="tokenURI" args={[BigInt(tokenId)]} address={contract} {abi} let:result>
-		{#if result}
-			{#await fetch(result) then response}
-				{#await response.json() then nft}
-					<slot {nft} />
-				{:catch error}
-					<slot name="error" {error} />
+	<ContractRead functionName="tokenURI" args={[BigInt(tokenId)]} address={contract} {abi}>
+		{#snippet children({ result })}
+			{#if result}
+				{#await fetch(result) then response}
+					{#await response.json() then nft}
+						{@render children?.({ nft })}
+					{:catch fetchError}
+						{@render errorSnippet?.({ error: fetchError })}
+					{/await}
+				{:catch fetchError}
+					{@render errorSnippet?.({ error: fetchError })}
 				{/await}
-			{:catch error}
-				<slot name="error" {error} />
-			{/await}
-		{:else}
-			<slot name="error" error="Failed to fetch tokenUri" />
-		{/if}
+			{:else}
+				{@render errorSnippet?.({ error: "Failed to fetch tokenUri" })}
+			{/if}
+		{/snippet}
 	</ContractRead>
 {/if}
