@@ -1,12 +1,25 @@
 # swagmi
 
-Svelte primitives for working with wagmi and ethers.
+Svelte 5 primitives for working with wagmi and viem.
 
 ## Installation
 
+### Latest stable version
 ```bash
-pnpm add swagmi ethers@^5
+pnpm add swagmi
 ```
+
+### Next version (Svelte 5 with runes)
+```bash
+pnpm add swagmi@next
+```
+
+## Requirements
+
+- Svelte 5+
+- @cinderlink/ui-kit@next (1.0.0-next.0 or higher)
+- wagmi v2
+- viem (replaces ethers)
 
 ## Usage
 
