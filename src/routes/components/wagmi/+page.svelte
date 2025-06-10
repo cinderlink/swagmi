@@ -16,23 +16,27 @@
     import { Wagmi } from "swagmi";
 </script>
 
-<Wagmi let:client>
-	{#if client}
-		<p class="text-green-500">Client present.</p>
-	{:else}
-		<p>Client not detected.</p>
-	{/if}
+<Wagmi>
+	{#snippet children({ connected, config })}
+		{#if connected && config}
+			<p class="text-green-500">Connected with config.</p>
+		{:else}
+			<p>Not connected.</p>
+		{/if}
+	{/snippet}
 </Wagmi>`}
 	/>
 </section>
 
 <section class="mt-4">
 	<Typography el="h4">Output</Typography>
-	<Wagmi let:client>
-		{#if client}
-			<p class="text-green-500">Client present.</p>
-		{:else}
-			<p>Client not detected.</p>
-		{/if}
+	<Wagmi>
+		{#snippet children({ connected, config })}
+			{#if connected && config}
+				<p class="text-green-500">Connected with config.</p>
+			{:else}
+				<p>Not connected.</p>
+			{/if}
+		{/snippet}
 	</Wagmi>
 </section>

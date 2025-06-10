@@ -18,45 +18,61 @@
     import { ContractRead } from "swagmi";
 </script>
 
-<Wagmi let:connected let:client>
-    {#if connected && wallet.address}
-        <ContractRead
-            method="balanceOf"
-            args={[wallet.address]}
-            address={CandorEarlyAccess.address}
-            abi={CandorEarlyAccess.abi}
-            let:result
-        >
-            <p class="text-green-500">Balance: \${result}</p>
-            <p class="text-red-500" slot="error" let:error><strong>Error:</strong> {error}</p>
-        </ContractRead>
-    {:else if client}
-        <ConnectButton />
-    {:else}
-        <LoadingIndicator>Loading client...</LoadingIndicator>
-    {/if}
+<Wagmi>
+    {#snippet children({ connected, config })}
+        {#if connected && wallet.address}
+            <ContractRead
+                functionName="balanceOf"
+                args={[wallet.address]}
+                address={CandorEarlyAccess.address}
+                abi={CandorEarlyAccess.abi}
+            >
+                {#snippet children({ result, error, loading })}
+                    {#if loading}
+                        <div class="i-tabler-loader animate-spin"></div>
+                    {:else if error}
+                        <p class="text-red-500"><strong>Error:</strong> {error.message}</p>
+                    {:else}
+                        <p class="text-green-500">Balance: \${result}</p>
+                    {/if}
+                {/snippet}
+            </ContractRead>
+        {:else if config}
+            <ConnectButton />
+        {:else}
+            <LoadingIndicator>Loading client...</LoadingIndicator>
+        {/if}
+    {/snippet}
 </Wagmi>`}
 	/>
 </section>
 
 <section class="mt-4">
 	<Typography el="h4">Output</Typography>
-	<Wagmi let:connected let:client>
-		{#if connected && wallet.address}
-			<ContractRead
-				method="balanceOf"
-				args={[wallet.address]}
-				address={CandorEarlyAccess.address}
-				abi={CandorEarlyAccess.abi}
-				let:result
-			>
-				<p class="text-green-500">Balance: ${result}</p>
-				<p class="text-red-500" slot="error" let:error><strong>Error:</strong> {error}</p>
-			</ContractRead>
-		{:else if client}
-			<ConnectButton />
-		{:else}
-			<LoadingIndicator>Loading client...</LoadingIndicator>
-		{/if}
+	<Wagmi>
+		{#snippet children({ connected, config })}
+			{#if connected && wallet.address}
+				<ContractRead
+					functionName="balanceOf"
+					args={[wallet.address]}
+					address={CandorEarlyAccess.address}
+					abi={CandorEarlyAccess.abi}
+				>
+					{#snippet children({ result, error, loading })}
+						{#if loading}
+							<div class="i-tabler-loader animate-spin"></div>
+						{:else if error}
+							<p class="text-red-500"><strong>Error:</strong> {error.message}</p>
+						{:else}
+							<p class="text-green-500">Balance: ${result}</p>
+						{/if}
+					{/snippet}
+				</ContractRead>
+			{:else if config}
+				<ConnectButton />
+			{:else}
+				<LoadingIndicator>Loading client...</LoadingIndicator>
+			{/if}
+		{/snippet}
 	</Wagmi>
 </section>

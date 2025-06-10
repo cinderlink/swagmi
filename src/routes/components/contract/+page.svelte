@@ -18,59 +18,67 @@
     import { Contract } from "swagmi";
 </script>
 
-<Wagmi let:connected let:client>
-	{#if connected && wallet.address}
-		<Contract address={CandorEarlyAccess.address} abi={CandorEarlyAccess.abi} let:contract>
-			{#if contract}
-				{#await contract.balanceOf(wallet.address)}
-					<div class="i-tabler-loader"></div>
-				{:then balance}
-					{#if balance}
-						<p class="text-green-500">Balance: \${balance}</p>
+<Wagmi>
+	{#snippet children({ connected, config })}
+		{#if connected && wallet.address}
+			<Contract address={CandorEarlyAccess.address} abi={CandorEarlyAccess.abi}>
+				{#snippet children(contract)}
+					{#if contract}
+						{#await contract.balanceOf(wallet.address)}
+							<div class="i-tabler-loader"></div>
+						{:then balance}
+							{#if balance}
+								<p class="text-green-500">Balance: \${balance}</p>
+							{:else}
+								<p class="text-purple-100">No balance.</p>
+							{/if}
+						{:catch}
+							<p class="text-red-500">Error checking balance.</p>
+						{/await}
 					{:else}
-						<p class="text-purple-100">No balance.</p>
+						<p>Contract not loaded.</p>
 					{/if}
-				{:catch}
-					<p class="text-red-500">Error checking balance.</p>
-				{/await}
-			{:else}
-				<p>Contract not loaded.</p>
-			{/if}
-		</Contract>
-	{:else if client}
-		<ConnectButton />
-	{:else}
-		<LoadingIndicator>Loading client...</LoadingIndicator>
-	{/if}
+				{/snippet}
+			</Contract>
+		{:else if config}
+			<ConnectButton />
+		{:else}
+			<LoadingIndicator>Loading client...</LoadingIndicator>
+		{/if}
+	{/snippet}
 </Wagmi>`}
 	/>
 </section>
 
 <section class="mt-4">
 	<Typography el="h4">Output</Typography>
-	<Wagmi let:connected let:client>
-		{#if connected && wallet.address}
-			<Contract address={CandorEarlyAccess.address} abi={CandorEarlyAccess.abi} let:contract>
-				{#if contract}
-					{#await contract.balanceOf(wallet.address)}
-						<div class="i-tabler-loader"></div>
-					{:then balance}
-						{#if balance}
-							<p class="text-green-500">Balance: ${balance}</p>
+	<Wagmi>
+		{#snippet children({ connected, config })}
+			{#if connected && wallet.address}
+				<Contract address={CandorEarlyAccess.address} abi={CandorEarlyAccess.abi}>
+					{#snippet children(contract)}
+						{#if contract}
+							{#await contract.balanceOf(wallet.address)}
+								<div class="i-tabler-loader"></div>
+							{:then balance}
+								{#if balance}
+									<p class="text-green-500">Balance: ${balance}</p>
+								{:else}
+									<p class="text-purple-100">No balance.</p>
+								{/if}
+							{:catch}
+								<p class="text-red-500">Error checking balance.</p>
+							{/await}
 						{:else}
-							<p class="text-purple-100">No balance.</p>
+							<p>Contract not loaded.</p>
 						{/if}
-					{:catch}
-						<p class="text-red-500">Error checking balance.</p>
-					{/await}
-				{:else}
-					<p>Contract not loaded.</p>
-				{/if}
-			</Contract>
-		{:else if client}
-			<ConnectButton />
-		{:else}
-			<LoadingIndicator>Loading client...</LoadingIndicator>
-		{/if}
+					{/snippet}
+				</Contract>
+			{:else if config}
+				<ConnectButton />
+			{:else}
+				<LoadingIndicator>Loading client...</LoadingIndicator>
+			{/if}
+		{/snippet}
 	</Wagmi>
 </section>

@@ -1,15 +1,23 @@
 <script lang="ts">
 	import { readContract } from '@wagmi/core';
-	import { onMount } from 'svelte';
+	import { onMount, type Snippet } from 'svelte';
 	import wagmi from '$lib/wagmi/store.svelte';
 	import type { Abi, Address } from 'viem';
 
-	let { address, abi, functionName, args = [], interval = undefined }: {
+	let { 
+		address, 
+		abi, 
+		functionName, 
+		args = [], 
+		interval = undefined,
+		children 
+	}: {
 		address: Address;
 		abi: Abi;
 		functionName: string;
 		args?: readonly unknown[];
 		interval?: number;
+		children?: Snippet<[{ loading: boolean; result: unknown; error: Error | undefined }]>;
 	} = $props();
 
 	let loading = $state(true);
@@ -59,4 +67,4 @@
 	});
 </script>
 
-<slot {loading} {result} {error} />
+{@render children?.({ loading, result, error })}
