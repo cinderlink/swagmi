@@ -1,13 +1,14 @@
 import { defineConfig } from 'vitest/config';
-import { sveltekit } from '@sveltejs/kit/vite';
+import { svelte } from '@sveltejs/vite-plugin-svelte';
+import { svelteTesting } from '@testing-library/svelte/vite';
 import path from 'path';
 
 export default defineConfig({
-  plugins: [sveltekit()],
+  plugins: [svelte(), svelteTesting()],
   test: {
     include: ['src/**/*.{test,spec}.{js,ts}'],
     globals: true,
-    environment: 'happy-dom',
+    environment: 'jsdom',
     setupFiles: ['./src/setupTests.ts'],
     coverage: {
       reporter: ['text', 'json', 'html'],
@@ -18,16 +19,19 @@ export default defineConfig({
         'src/lib/contracts/**',
         'src/lib/registry/contracts/**'
       ]
-    },
-    alias: {
-      '$lib': path.resolve('./src/lib'),
-      '$app': path.resolve('./src/app-mocks')
     }
   },
-  resolve: {
+  resolve: process.env.VITEST ? {
+    conditions: ['browser'],
+    alias: {
+      '$lib': path.resolve('./src/lib'),
+      '$env/dynamic/public': path.resolve('./src/test-mocks/env.ts')
+    }
+  } : {
     conditions: ['browser', 'development', 'svelte'],
     alias: {
-      '$lib': path.resolve('./src/lib')
+      '$lib': path.resolve('./src/lib'),
+      '$env/dynamic/public': path.resolve('./src/test-mocks/env.ts')
     }
   }
 });
