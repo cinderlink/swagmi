@@ -4,7 +4,9 @@
 	import wagmi from '$lib/wagmi/store.svelte';
 	import wallet from '$lib/wallet/store.svelte';
 
-	let { chainId }: {
+	let {
+		chainId
+	}: {
 		chainId: number;
 	} = $props();
 

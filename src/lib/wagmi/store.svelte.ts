@@ -18,27 +18,27 @@ class WagmiState {
 		connected: false,
 		chains: []
 	});
-	
+
 	get loading() {
 		return this.state.loading;
 	}
-	
+
 	get connected() {
 		return this.state.connected;
 	}
-	
+
 	get config() {
 		return this.state.config;
 	}
-	
+
 	get chains() {
 		return this.state.chains;
 	}
-	
+
 	update(updater: (current: WagmiStore) => WagmiStore) {
 		this.state = updater(this.state);
 	}
-	
+
 	set(newState: WagmiStore) {
 		this.state = newState;
 	}

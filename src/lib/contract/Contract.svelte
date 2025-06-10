@@ -8,12 +8,12 @@
 	import { LoadingIndicator } from '@cinderlink/ui-kit';
 	import type { Abi, Address } from 'viem';
 
-	let { 
-		address, 
-		abi, 
+	let {
+		address,
+		abi,
 		contract = writable(undefined),
 		children,
-		loading 
+		loading
 	}: {
 		address: Address;
 		abi: Abi;
@@ -50,10 +50,8 @@
 
 {#if $contract}
 	{@render children?.($contract)}
+{:else if loading}
+	{@render loading()}
 {:else}
-	{#if loading}
-		{@render loading()}
-	{:else}
-		<LoadingIndicator>Loading contract...</LoadingIndicator>
-	{/if}
+	<LoadingIndicator>Loading contract...</LoadingIndicator>
 {/if}

@@ -5,11 +5,13 @@ Svelte 5 primitives for working with wagmi and viem.
 ## Installation
 
 ### Latest stable version
+
 ```bash
 pnpm add swagmi
 ```
 
 ### Next version (Svelte 5 with runes)
+
 ```bash
 pnpm add swagmi@next
 ```

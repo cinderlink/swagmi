@@ -4,13 +4,13 @@
 	import wagmi from '$lib/wagmi/store.svelte';
 	import type { Abi, Address } from 'viem';
 
-	let { 
-		address, 
-		abi, 
-		functionName, 
-		args = [], 
+	let {
+		address,
+		abi,
+		functionName,
+		args = [],
 		interval = undefined,
-		children 
+		children
 	}: {
 		address: Address;
 		abi: Abi;

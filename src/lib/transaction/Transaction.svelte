@@ -6,7 +6,12 @@
 	import type { Hash } from 'viem';
 	import Receipt from './Receipt.svelte';
 
-	let { explorerUrl = undefined, receipt = undefined, confirmations = 12, hash = undefined }: {
+	let {
+		explorerUrl = undefined,
+		receipt = undefined,
+		confirmations = 12,
+		hash = undefined
+	}: {
 		explorerUrl?: string;
 		receipt?: any;
 		confirmations?: number;

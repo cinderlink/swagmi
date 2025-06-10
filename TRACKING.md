@@ -75,12 +75,14 @@ Modernizing the swagmi package to address security vulnerabilities and update se
 ## Phase 6: Version 1.0.0-next Release Preparation ✅ COMPLETED
 
 - [x] **Version Bump to 1.0.0-next.0**
+
   - Updated from v0.0.22 to v1.0.0-next.0 for next tag release
   - Represents major version bump due to comprehensive Svelte 5 modernization
   - Breaking changes: Svelte 5 runes, wagmi v2, viem migration, removed Web3Modal
   - Targets early adopters and bleeding-edge projects
 
 - [x] **Final Build Validation**
+
   - ✅ Project builds successfully with zero errors
   - ✅ Package builds and passes publint validation
   - ✅ All ESLint checks pass
@@ -95,6 +97,7 @@ Modernizing the swagmi package to address security vulnerabilities and update se
 ## Phase 7: Svelte 5 Snippet Migration ✅ COMPLETED
 
 - [x] **Complete Slot to Snippet Migration**
+
   - Migrated all `<slot>` elements to Svelte 5 snippets using `{@render ...}` syntax
   - Updated Contract.svelte: default slot → children snippet, loading slot → loading snippet
   - Updated Wagmi.svelte: default slot with props → children snippet with parameters
@@ -104,18 +107,21 @@ Modernizing the swagmi package to address security vulnerabilities and update se
   - Added proper TypeScript support with `Snippet<[...]>` types from 'svelte'
 
 - [x] **Updated Component Usage Examples**
+
   - Migrated route pages to use new snippet syntax
   - Updated Wagmi component examples with `{#snippet children({ connected, config })}`
   - Updated Contract component examples with proper snippet parameters
   - Updated ContractRead component examples with `{#snippet children({ result, error, loading })}`
 
 - [x] **Build Validation**
+
   - ✅ Zero slot deprecation warnings (previously had 16 warnings)
   - ✅ All components successfully migrated to modern Svelte 5 snippet system
   - ✅ Build completes without errors
   - ✅ Package generation successful
 
 - [x] **Store Migration to Runes**
+
   - Converted wagmi store from `writable()` to Svelte 5 runes class with `$state()`
   - Converted wallet store from `writable()` to Svelte 5 runes class with `$state()`
   - Created new `.svelte.ts` files for proper Svelte 5 store architecture
@@ -123,12 +129,14 @@ Modernizing the swagmi package to address security vulnerabilities and update se
   - Removed old `svelte/store` dependencies and `get()` function usage
 
 - [x] **Reactive System Migration**
+
   - Converted all `$:` reactive statements to `$effect()` and `$derived()`
   - Updated computed values to use `$derived()` (e.g., chainId calculations)
   - Updated side effects to use `$effect()` (e.g., contract loading logic)
   - Converted reactive state variables to `$state()` where needed
 
 - [x] **Component Props Migration**
+
   - Updated all `export let propName` to `let { propName } = $props()` pattern
   - Updated 10+ component files across lib directory
   - Maintained prop defaults and types during migration
@@ -143,6 +151,7 @@ Modernizing the swagmi package to address security vulnerabilities and update se
 ## Phase 8: Testing Modernization ✅ COMPLETED
 
 - [x] **Modern Testing Framework Setup**
+
   - Replaced Playwright component tests with Vitest for unit testing
   - Installed Vitest v3.2.3 with @vitest/ui for interactive testing
   - Added @testing-library/svelte v5.2.8 for component testing
@@ -150,12 +159,14 @@ Modernizing the swagmi package to address security vulnerabilities and update se
   - Created vitest.config.ts with proper SvelteKit integration
 
 - [x] **Test Infrastructure**
+
   - Created setupTests.ts with proper mocking for SvelteKit modules
   - Mocked $env/dynamic/public for environment variables
   - Mocked $app/stores for SvelteKit internals
   - Configured test coverage reporting with exclusions for generated files
 
 - [x] **Store Testing**
+
   - Created comprehensive tests for wagmi store (4 tests passing)
   - Created comprehensive tests for wallet store with balance tracking (5 tests passing)
   - Properly mocked @wagmi/core and viem dependencies

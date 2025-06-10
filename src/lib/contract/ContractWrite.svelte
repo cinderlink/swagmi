@@ -32,7 +32,16 @@
 		value?: bigint;
 		receipt?: any;
 		hash?: Hash;
-		children?: Snippet<[{ run: (...args: unknown[]) => Promise<void>; receipt: any; hash: Hash | undefined; submitting: boolean }]>;
+		children?: Snippet<
+			[
+				{
+					run: (...args: unknown[]) => Promise<void>;
+					receipt: any;
+					hash: Hash | undefined;
+					submitting: boolean;
+				}
+			]
+		>;
 		error?: Snippet<[{ error: Error }]>;
 		pending?: Snippet<[{ hash: Hash }]>;
 		receiptSnippet?: Snippet<[{ receipt: any }]>;
@@ -83,7 +92,7 @@
 <Contract bind:contract {address} {abi}>
 	{#snippet children(contractInstance)}
 		{@render children?.({ run, receipt, hash, submitting })}
-		
+
 		{#if error}
 			{#if errorSnippet}
 				{@render errorSnippet({ error })}
